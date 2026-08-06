@@ -207,6 +207,18 @@ export async function POST(request: Request) {
     let optimizedDeckCost = currentTotalCost;
     const swappedOracleIds = new Set<string>();
 
+    const WINCON_KEYWORDS = [
+      'win-condition',
+      'alternate-win-condition',
+      'wincon',
+      'win-con',
+      'infinite-combo',
+      'combo-piece',
+      'game-ender',
+      'extra-turn',
+      'extra-turns',
+    ];
+
     // Cascading Multi-Pass Reduction Function
     const runSwapPass = async (minCardPrice: number, maxSwapPrice: number, minSavings: number) => {
       const candidates = deckCards
@@ -215,6 +227,12 @@ export async function POST(request: Request) {
 
       for (const card of candidates) {
         if (optimizedDeckCost <= targetNumBudget) break;
+
+        // Check if original card has wincon tags
+        const winconOtags = card.oracle_tags
+          .filter((t) => WINCON_KEYWORDS.some((kw) => t.toLowerCase().includes(kw)))
+          .map((t) => `otag:${t}`);
+        const isWinconCard = winconOtags.length > 0;
 
         const candRes = await query(
           `SELECT c.oracle_id, c.name, c.type_line, c.mana_value, c.price_usd, c.image_uri,
@@ -232,9 +250,23 @@ export async function POST(request: Request) {
              AND c.price_usd > 0
              AND ($5::text[] IS NULL OR c.color_identity <@ $5::text[])
              AND ($6::boolean = FALSE OR COALESCE(c.is_silver_bordered, FALSE) = FALSE)
+             AND ($7::boolean = FALSE OR EXISTS (
+               SELECT 1 FROM oracle_tags ot_w
+               WHERE ot_w.card_oracle_id = c.oracle_id
+               AND (ot_w.tag = ANY($8::text[]) OR ot_w.tag LIKE '%win-condition%' OR ot_w.tag LIKE '%wincon%' OR ot_w.tag LIKE '%alternate-win-condition%')
+             ))
            ORDER BY ce.embedding <=> $1::vector ASC
            LIMIT 1`,
-          [card.embedding_str, card.oracle_tags.map((t) => `otag:${t}`), card.oracle_id, maxSwapPrice, card.color_identity, exclude_silver]
+          [
+            card.embedding_str,
+            card.oracle_tags.map((t) => `otag:${t}`),
+            card.oracle_id,
+            maxSwapPrice,
+            card.color_identity,
+            exclude_silver,
+            isWinconCard,
+            winconOtags.length > 0 ? winconOtags : ['otag:win-condition', 'otag:alternate-win-condition'],
+          ]
         );
 
         if (candRes.rows.length > 0) {
