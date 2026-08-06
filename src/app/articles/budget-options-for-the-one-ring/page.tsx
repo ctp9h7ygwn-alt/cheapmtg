@@ -98,7 +98,7 @@ const SWAPS = [
     synergy: "Matches The One Ring's colorless Artifact card type. Provides repeatable tap-activated burst card draw for Commander without requiring color mana.",
     sharedTags: ['#burst-draw', '#hand-positive', '#repeatable-pure-draw', '#tome', '#activated-ability'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Loreseeker\'s%20Stone&utm_source=cheapmtg',
-    manaPoolUrl: 'https://manapool.com/cards?query=Loreseeker\'s%20Stone&ref=cheapmtg',
+    manaPoolUrl: 'https://manapool.com/cards?q=Loreseeker\'s%20Stone&ref=cheapmtg',
   },
   {
     name: 'Staff of Compleation',
@@ -109,7 +109,7 @@ const SWAPS = [
     synergy: "Matches The One Ring's Artifact card type, but costs 1 less mana to cast (3 MV vs 4 MV). Exchanges life total for repeatable card draw and mana ramp.",
     sharedTags: ['#life-for-cards', '#repeatable-pure-draw', '#tome', '#activated-ability'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Staff%20of%20Compleation&utm_source=cheapmtg',
-    manaPoolUrl: 'https://manapool.com/cards?query=Staff%20of%20Compleation&ref=cheapmtg',
+    manaPoolUrl: 'https://manapool.com/cards?q=Staff%20of%20Compleation&ref=cheapmtg',
   },
 ];
 

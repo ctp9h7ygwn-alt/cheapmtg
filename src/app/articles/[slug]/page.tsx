@@ -200,7 +200,7 @@ async function getArticleData(slug: string) {
       dollar_savings: parseFloat(dollarSavings.toFixed(2)),
       percent_savings: percentSavings,
       tcgplayer_url: `https://www.tcgplayer.com/search/magic/product?q=${encodeURIComponent(cand.name)}&utm_source=cheapmtg`,
-      manapool_url: `https://manapool.com/cards?query=${encodeURIComponent(cand.name)}&ref=cheapmtg`,
+      manapool_url: `https://manapool.com/cards?q=${encodeURIComponent(cand.name)}&ref=cheapmtg`,
     };
   });
 

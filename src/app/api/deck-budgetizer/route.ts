@@ -291,7 +291,7 @@ export async function POST(request: Request) {
                 similarity_score: similarityScore,
                 shared_tags: sharedTagsClean,
                 tcgplayer_url: `https://www.tcgplayer.com/search/magic/product?q=${encodeURIComponent(topCand.name)}&utm_source=cheapmtg`,
-                manapool_url: `https://manapool.com/cards?query=${encodeURIComponent(topCand.name)}&ref=cheapmtg`,
+                manapool_url: `https://manapool.com/cards?q=${encodeURIComponent(topCand.name)}&ref=cheapmtg`,
               },
               dollar_savings: parseFloat((savingsPerCard * card.count).toFixed(2)),
               percent_savings: Math.round((savingsPerCard / card.price_usd) * 100),

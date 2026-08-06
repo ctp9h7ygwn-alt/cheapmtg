@@ -97,7 +97,7 @@ const SWAPS = [
     match: '95% Vector Match',
     sharedTags: ['#cast-tax', '#repeatable-pure-draw'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Unifying%20Theory&utm_source=cheapmtg',
-    manaPoolUrl: 'https://manapool.com/cards?query=Unifying%20Theory&ref=cheapmtg',
+    manaPoolUrl: 'https://manapool.com/cards?q=Unifying%20Theory&ref=cheapmtg',
   },
   {
     name: 'Soul Barrier',
@@ -107,7 +107,7 @@ const SWAPS = [
     match: '84% Vector Match',
     sharedTags: ['#cast-tax', '#cast-trigger-other', '#rhystic'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Soul%20Barrier&utm_source=cheapmtg',
-    manaPoolUrl: 'https://manapool.com/cards?query=Soul%20Barrier&ref=cheapmtg',
+    manaPoolUrl: 'https://manapool.com/cards?q=Soul%20Barrier&ref=cheapmtg',
   },
   {
     name: 'Idle Thoughts',
@@ -117,7 +117,7 @@ const SWAPS = [
     match: '87% Vector Match',
     sharedTags: ['#repeatable-pure-draw'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Idle%20Thoughts&utm_source=cheapmtg',
-    manaPoolUrl: 'https://manapool.com/cards?query=Idle%20Thoughts&ref=cheapmtg',
+    manaPoolUrl: 'https://manapool.com/cards?q=Idle%20Thoughts&ref=cheapmtg',
   },
 ];
 
