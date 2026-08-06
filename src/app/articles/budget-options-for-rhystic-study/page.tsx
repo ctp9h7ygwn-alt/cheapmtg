@@ -64,6 +64,28 @@ const JSON_LD = [
       },
     ],
   },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What is the cheapest budget replacement for Rhystic Study?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Unifying Theory ($0.44) and Soul Barrier ($0.25) are the top budget replacements for Rhystic Study, delivering spell taxation and card draw for under $1.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Why is Rhystic Study so expensive in EDH?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Rhystic Study costs over $45 due to high Commander demand and unique tax-based card draw mechanics.',
+        },
+      },
+    ],
+  },
 ];
 
 const SWAPS = [

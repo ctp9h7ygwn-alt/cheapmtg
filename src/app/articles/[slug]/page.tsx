@@ -243,10 +243,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cheapmtg.com';
   const name = data.targetCard.name;
   const colorLabel = getColorLabel(data.targetCard.color_identity);
+  const topAlternative = data.alternatives[0]?.name || 'budget substitutes';
 
   return {
     title: `Best ${colorLabel} budget alternatives to ${name}`,
-    description: `Definitive MTG budget strategy guide for ${name}. Compare vector-analyzed ${colorLabel.toLowerCase()} card substitutes like ${data.alternatives[0]?.name || 'alternatives'} and save up to 99%.`,
+    description: `Definitive MTG budget strategy guide for ${name}. Compare vector-analyzed ${colorLabel.toLowerCase()} card substitutes like ${topAlternative} and save up to 99%.`,
+    keywords: [
+      `budget ${name}`,
+      `${name} alternatives`,
+      `cheap ${name} replacement`,
+      `best ${colorLabel.toLowerCase()} budget cards edh`,
+      `mtg commander budget swaps`,
+      `${name} substitute mtg`,
+      `${topAlternative} vs ${name}`,
+      `cheap ${data.targetCard.type_line} edh`,
+    ],
     alternates: {
       canonical: `${baseUrl}/articles/${params.slug}`,
     },
@@ -270,6 +281,7 @@ export default async function DynamicArticlePage({ params }: Props) {
   const colorLabel = getColorLabel(targetCard.color_identity);
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cheapmtg.com';
   const canonicalUrl = `${baseUrl}/articles/${params.slug}`;
+  const topAlternative = alternatives[0]?.name || 'low-cost substitutes';
 
   const jsonLd = [
     {
@@ -304,6 +316,30 @@ export default async function DynamicArticlePage({ params }: Props) {
           position: 3,
           name: targetCard.name,
           item: canonicalUrl,
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: `What is the best cheap budget alternative to ${targetCard.name}?`,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: alternatives.length > 0
+              ? `The top vector-matched budget alternative to ${targetCard.name} is ${topAlternative} ($${alternatives[0].price_usd.toFixed(2)}), offering a ${alternatives[0].similarity_score}% functional match while saving $${alternatives[0].dollar_savings.toFixed(2)}.`
+              : `Functional replacements for ${targetCard.name} are available for under $5.00 on CheapMTG.`,
+          },
+        },
+        {
+          '@type': 'Question',
+          name: `How can I replace ${targetCard.name} in MTG Commander on a budget?`,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: `You can replace ${targetCard.name} ($${targetCard.price_usd.toFixed(2)}) in EDH by swapping in lower-cost cards that share key Scryfall oracle tags like #${targetCard.oracle_tags.slice(0, 3).join(', #')} and identical color identity (${targetCard.color_identity.join(', ') || 'Colorless'}).`,
+          },
         },
       ],
     },

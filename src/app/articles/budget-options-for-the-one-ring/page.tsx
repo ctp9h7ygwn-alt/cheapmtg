@@ -64,6 +64,28 @@ const JSON_LD = [
       },
     ],
   },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What is the best budget alternative to The One Ring in Commander?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Loreseeker’s Stone ($0.28) and Staff of Compleation ($4.26) are top vector-matched budget replacements for The One Ring under $5.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Why is The One Ring so expensive in MTG?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'The One Ring costs over $100 due to non-land protection and escalating turn-by-turn card draw across Modern and Commander formats.',
+        },
+      },
+    ],
+  },
 ];
 
 const SWAPS = [
