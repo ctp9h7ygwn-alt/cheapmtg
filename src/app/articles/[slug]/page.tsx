@@ -17,6 +17,8 @@ import {
   Zap
 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   params: { slug: string };
 }

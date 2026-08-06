@@ -4,6 +4,8 @@ import { query } from '@/lib/db';
 import { Sparkles } from 'lucide-react';
 import { InfiniteArticlesGrid } from './InfiniteArticlesGrid';
 
+export const dynamic = 'force-dynamic';
+
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cheapmtg.com';
 
 export const metadata: Metadata = {
