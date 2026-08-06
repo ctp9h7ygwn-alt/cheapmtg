@@ -276,6 +276,9 @@ function SwapEngineContent() {
               <Link href="/" className="text-amber-400 border-b border-amber-400 pb-0.5 font-bold">
                 Swap Engine
               </Link>
+              <Link href="/deck-budgetizer" className="text-[#8b949e] hover:text-white transition-colors">
+                Deck Budgetizer
+              </Link>
               <Link href="/articles" className="text-[#8b949e] hover:text-white transition-colors flex items-center gap-1">
                 <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Articles
               </Link>

@@ -85,6 +85,9 @@ export default async function ArticlesIndexPage() {
             <Link href="/" className="text-[#8b949e] hover:text-white transition-colors">
               Swap Engine
             </Link>
+            <Link href="/deck-budgetizer" className="text-[#8b949e] hover:text-white transition-colors">
+              Deck Budgetizer
+            </Link>
             <Link href="/articles" className="text-amber-400 font-bold border-b border-amber-400 pb-0.5">
               Articles
             </Link>

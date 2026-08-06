@@ -360,6 +360,9 @@ export default async function DynamicArticlePage({ params }: Props) {
             <Link href="/" className="text-[#8b949e] hover:text-white transition-colors">
               Swap Engine
             </Link>
+            <Link href="/deck-budgetizer" className="text-[#8b949e] hover:text-white transition-colors">
+              Deck Budgetizer
+            </Link>
             <Link href="/articles" className="text-amber-400 font-bold">
               Articles
             </Link>
