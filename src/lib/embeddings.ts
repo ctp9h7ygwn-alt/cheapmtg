@@ -1,13 +1,10 @@
-import { pipeline, env } from '@xenova/transformers';
-
-// Configure local cache if needed
-env.allowLocalModels = false;
-
 let extractorPipeline: any = null;
 
 export async function getEmbeddingPipeline() {
   if (!extractorPipeline) {
-    console.log('Loading local embedding model (Xenova/all-MiniLM-L6-v2)...');
+    console.log('Loading embedding model (Xenova/all-MiniLM-L6-v2)...');
+    const { pipeline, env } = await import('@xenova/transformers');
+    env.allowLocalModels = false;
     extractorPipeline = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
     console.log('Embedding model loaded successfully.');
   }

@@ -1,16 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['@xenova/transformers', 'onnxruntime-node'],
+  },
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.ignoreWarnings = [
         { module: /node_modules\/@xenova\/transformers/ }
       ];
     }
-    // Set externals for node environment
-    config.externals.push({
-      'onnxruntime-node': 'commonjs onnxruntime-node',
-      '@xenova/transformers': 'commonjs @xenova/transformers',
-    });
     return config;
   },
   images: {
