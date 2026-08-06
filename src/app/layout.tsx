@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Outfit, Cinzel } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
 
 const outfit = Outfit({
@@ -63,6 +64,7 @@ export default function RootLayout({
     <html lang="en" className={`dark ${outfit.variable} ${cinzel.variable}`}>
       <body className="min-h-screen bg-[#05070a] text-[#f0f6fc] font-sans antialiased selection:bg-amber-500/30 selection:text-amber-200">
         {children}
+        <Analytics />
       </body>
     </html>
   );
