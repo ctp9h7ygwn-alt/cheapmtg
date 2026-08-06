@@ -201,80 +201,92 @@ export async function POST(request: Request) {
     }
 
     const targetNumBudget = parseFloat(target_budget.toString()) || 100;
+    const targetAvgCardPrice = targetNumBudget / Math.max(1, deckCards.length);
     const appliedSwaps: AppliedSwap[] = [];
     const keptCoreCards: DeckCardInfo[] = [];
     let optimizedDeckCost = currentTotalCost;
+    const swappedOracleIds = new Set<string>();
 
-    // Identify candidate cards over $3.00 for budget swapping
-    const swappableCandidates = deckCards
-      .filter((c) => c.price_usd >= 3.00 && !c.is_commander && c.embedding_str)
-      .sort((a, b) => b.price_usd - a.price_usd); // Sort by highest price first
+    // Cascading Multi-Pass Reduction Function
+    const runSwapPass = async (minCardPrice: number, maxSwapPrice: number, minSavings: number) => {
+      const candidates = deckCards
+        .filter((c) => c.price_usd >= minCardPrice && !c.is_commander && c.embedding_str && !swappedOracleIds.has(c.oracle_id))
+        .sort((a, b) => b.price_usd - a.price_usd);
 
-    for (const card of swappableCandidates) {
-      if (optimizedDeckCost <= targetNumBudget) break;
+      for (const card of candidates) {
+        if (optimizedDeckCost <= targetNumBudget) break;
 
-      // Find top vector match under $2.50
-      const candRes = await query(
-        `SELECT c.oracle_id, c.name, c.type_line, c.mana_value, c.price_usd, c.image_uri,
-                (1 - (ce.embedding <=> $1::vector)) as vector_similarity,
-                ARRAY(
-                  SELECT ot.tag FROM oracle_tags ot 
-                  WHERE ot.card_oracle_id = c.oracle_id 
-                  AND ot.tag = ANY($2::text[])
-                ) as shared_tags
-         FROM card_embeddings ce
-         JOIN cards c ON ce.oracle_id = c.oracle_id
-         WHERE c.oracle_id != $3
-           AND c.price_usd IS NOT NULL
-           AND c.price_usd <= 2.50
-           AND c.price_usd > 0
-           AND ($4::text[] IS NULL OR c.color_identity <@ $4::text[])
-           AND ($5::boolean = FALSE OR COALESCE(c.is_silver_bordered, FALSE) = FALSE)
-         ORDER BY ce.embedding <=> $1::vector ASC
-         LIMIT 1`,
-        [card.embedding_str, card.oracle_tags.map((t) => `otag:${t}`), card.oracle_id, card.color_identity, exclude_silver]
-      );
+        const candRes = await query(
+          `SELECT c.oracle_id, c.name, c.type_line, c.mana_value, c.price_usd, c.image_uri,
+                  (1 - (ce.embedding <=> $1::vector)) as vector_similarity,
+                  ARRAY(
+                    SELECT ot.tag FROM oracle_tags ot 
+                    WHERE ot.card_oracle_id = c.oracle_id 
+                    AND ot.tag = ANY($2::text[])
+                  ) as shared_tags
+           FROM card_embeddings ce
+           JOIN cards c ON ce.oracle_id = c.oracle_id
+           WHERE c.oracle_id != $3
+             AND c.price_usd IS NOT NULL
+             AND c.price_usd <= $4
+             AND c.price_usd > 0
+             AND ($5::text[] IS NULL OR c.color_identity <@ $5::text[])
+             AND ($6::boolean = FALSE OR COALESCE(c.is_silver_bordered, FALSE) = FALSE)
+           ORDER BY ce.embedding <=> $1::vector ASC
+           LIMIT 1`,
+          [card.embedding_str, card.oracle_tags.map((t) => `otag:${t}`), card.oracle_id, maxSwapPrice, card.color_identity, exclude_silver]
+        );
 
-      if (candRes.rows.length > 0) {
-        const topCand = candRes.rows[0];
-        const candPrice = parseFloat(topCand.price_usd);
-        const savingsPerCard = card.price_usd - candPrice;
+        if (candRes.rows.length > 0) {
+          const topCand = candRes.rows[0];
+          const candPrice = parseFloat(topCand.price_usd);
+          const savingsPerCard = card.price_usd - candPrice;
 
-        if (savingsPerCard > 1.50) {
-          const similarityScore = Math.max(0, Math.round(topCand.vector_similarity * 100));
-          const sharedTagsClean = (topCand.shared_tags || []).map((t: string) => t.replace('otag:', ''));
+          if (savingsPerCard >= minSavings) {
+            const similarityScore = Math.max(0, Math.round(topCand.vector_similarity * 100));
+            const sharedTagsClean = (topCand.shared_tags || []).map((t: string) => t.replace('otag:', ''));
 
-          appliedSwaps.push({
-            original_card: card,
-            swap_card: {
-              oracle_id: topCand.oracle_id,
-              name: topCand.name,
-              type_line: topCand.type_line,
-              mana_value: parseFloat(topCand.mana_value || '0'),
-              price_usd: candPrice,
-              image_uri: topCand.image_uri,
-              similarity_score: similarityScore,
-              shared_tags: sharedTagsClean,
-              tcgplayer_url: `https://www.tcgplayer.com/search/magic/product?q=${encodeURIComponent(topCand.name)}&utm_source=cheapmtg`,
-              manapool_url: `https://manapool.com/cards?query=${encodeURIComponent(topCand.name)}&ref=cheapmtg`,
-            },
-            dollar_savings: parseFloat((savingsPerCard * card.count).toFixed(2)),
-            percent_savings: Math.round((savingsPerCard / card.price_usd) * 100),
-          });
+            swappedOracleIds.add(card.oracle_id);
+            appliedSwaps.push({
+              original_card: card,
+              swap_card: {
+                oracle_id: topCand.oracle_id,
+                name: topCand.name,
+                type_line: topCand.type_line,
+                mana_value: parseFloat(topCand.mana_value || '0'),
+                price_usd: candPrice,
+                image_uri: topCand.image_uri,
+                similarity_score: similarityScore,
+                shared_tags: sharedTagsClean,
+                tcgplayer_url: `https://www.tcgplayer.com/search/magic/product?q=${encodeURIComponent(topCand.name)}&utm_source=cheapmtg`,
+                manapool_url: `https://manapool.com/cards?query=${encodeURIComponent(topCand.name)}&ref=cheapmtg`,
+              },
+              dollar_savings: parseFloat((savingsPerCard * card.count).toFixed(2)),
+              percent_savings: Math.round((savingsPerCard / card.price_usd) * 100),
+            });
 
-          optimizedDeckCost -= savingsPerCard * card.count;
-        } else {
-          keptCoreCards.push(card);
+            optimizedDeckCost -= savingsPerCard * card.count;
+          }
         }
-      } else {
-        keptCoreCards.push(card);
       }
+    };
+
+    // Pass 1: High Staples ($5.00+ cards -> $2.50 or 3x average)
+    await runSwapPass(5.00, Math.max(0.75, Math.min(2.50, targetAvgCardPrice * 3)), 1.50);
+
+    // Pass 2: Mid-tier Cards ($1.50+ cards -> $1.00 or 2x average)
+    if (optimizedDeckCost > targetNumBudget) {
+      await runSwapPass(1.50, Math.max(0.40, Math.min(1.00, targetAvgCardPrice * 2)), 0.50);
     }
 
-    // Populate kept core cards with remaining high-value cards not swapped
-    const swappedOriginalIds = new Set(appliedSwaps.map((s) => s.original_card.oracle_id));
+    // Pass 3: Ultra-Budget Deep Sweep (cards > average -> penny cards <= $0.25)
+    if (optimizedDeckCost > targetNumBudget) {
+      await runSwapPass(Math.max(0.35, targetAvgCardPrice), Math.max(0.15, Math.min(0.30, targetAvgCardPrice * 1.2)), 0.10);
+    }
+
+    // Identify preserved high-value cards not swapped
     for (const card of deckCards) {
-      if (card.price_usd >= 3.00 && !swappedOriginalIds.has(card.oracle_id)) {
+      if (card.price_usd >= 3.00 && !swappedOracleIds.has(card.oracle_id)) {
         if (!keptCoreCards.some((k) => k.oracle_id === card.oracle_id)) {
           keptCoreCards.push(card);
         }
