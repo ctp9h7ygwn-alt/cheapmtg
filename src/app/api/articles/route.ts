@@ -9,24 +9,35 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '12', 10);
+  const search = (searchParams.get('q') || '').trim();
   const offset = (page - 1) * limit;
 
   try {
+    let whereClause = `WHERE price_usd IS NOT NULL AND price_usd >= 15.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE`;
+    const params: any[] = [limit, offset];
+
+    if (search) {
+      params.push(`%${search.toLowerCase()}%`);
+      whereClause += ` AND (LOWER(name) LIKE $3 OR LOWER(type_line) LIKE $3)`;
+    }
+
     const res = await query(
       `SELECT oracle_id, name, type_line, price_usd, image_uri, color_identity
        FROM cards
-       WHERE price_usd IS NOT NULL AND price_usd >= 15.00
-         AND COALESCE(is_silver_bordered, FALSE) = FALSE
+       ${whereClause}
        ORDER BY price_usd DESC
        LIMIT $1 OFFSET $2`,
-      [limit, offset]
+      params
     );
 
+    const countParams = search ? [`%${search.toLowerCase()}%`] : [];
+    const countWhere = search
+      ? `WHERE price_usd IS NOT NULL AND price_usd >= 15.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE AND (LOWER(name) LIKE $1 OR LOWER(type_line) LIKE $1)`
+      : `WHERE price_usd IS NOT NULL AND price_usd >= 15.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE`;
+
     const countRes = await query(
-      `SELECT COUNT(*) as total
-       FROM cards
-       WHERE price_usd IS NOT NULL AND price_usd >= 15.00
-         AND COALESCE(is_silver_bordered, FALSE) = FALSE`
+      `SELECT COUNT(*) as total FROM cards ${countWhere}`,
+      countParams
     );
 
     const total = parseInt(countRes.rows[0].total, 10);
