@@ -276,8 +276,11 @@ function SwapEngineContent() {
               <Link href="/" className="text-amber-400 border-b border-amber-400 pb-0.5 font-bold">
                 Swap Engine
               </Link>
-              <Link href="/deck-budgetizer" className="text-[#8b949e] hover:text-white transition-colors">
+              <Link href="/deck-budgetizer" className="text-[#8b949e] hover:text-white transition-colors flex items-center gap-1.5">
                 Deck Budgetizer
+                <span className="px-1.5 py-0.5 text-[10px] font-extrabold font-mono uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-md tracking-wider">
+                  BETA
+                </span>
               </Link>
               <Link href="/articles" className="text-[#8b949e] hover:text-white transition-colors flex items-center gap-1">
                 <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Articles
@@ -878,7 +881,7 @@ function SwapEngineContent() {
               <h4 className="font-bold text-white font-mono uppercase tracking-wider">Quick Links</h4>
               <ul className="space-y-1.5 text-[#8b949e]">
                 <li><Link href="/" className="hover:text-amber-400 transition-colors">Swap Engine</Link></li>
-                <li><Link href="/deck-budgetizer" className="hover:text-amber-400 transition-colors">Deck Budgetizer</Link></li>
+                <li><Link href="/deck-budgetizer" className="hover:text-amber-400 transition-colors inline-flex items-center gap-1.5">Deck Budgetizer <span className="px-1.5 py-0.5 text-[9px] font-extrabold font-mono uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-md">BETA</span></Link></li>
                 <li><Link href="/articles" className="hover:text-amber-400 transition-colors">Articles & Strategy</Link></li>
               </ul>
             </div>

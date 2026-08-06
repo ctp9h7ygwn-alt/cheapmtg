@@ -146,8 +146,11 @@ export default function DeckBudgetizerPage() {
             <Link href="/" className="text-[#8b949e] hover:text-white transition-colors">
               Swap Engine
             </Link>
-            <Link href="/deck-budgetizer" className="text-amber-400 font-bold border-b border-amber-400 pb-0.5">
+            <Link href="/deck-budgetizer" className="text-amber-400 font-bold border-b border-amber-400 pb-0.5 flex items-center gap-1.5">
               Deck Budgetizer
+              <span className="px-1.5 py-0.5 text-[10px] font-extrabold font-mono uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-md tracking-wider">
+                BETA
+              </span>
             </Link>
             <Link href="/articles" className="text-[#8b949e] hover:text-white transition-colors flex items-center gap-1">
               <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Articles
@@ -160,8 +163,11 @@ export default function DeckBudgetizerPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10 relative z-10">
         {/* Hero Banner */}
         <section className="text-center space-y-4 max-w-3xl mx-auto">
-          <h1 className="font-cinzel text-4xl sm:text-5xl font-black leading-tight gradient-text-gold">
+          <h1 className="font-cinzel text-4xl sm:text-5xl font-black leading-tight gradient-text-gold flex items-center justify-center gap-3">
             Commander Deck Budgetizer
+            <span className="px-2.5 py-0.5 text-xs font-extrabold font-mono uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full tracking-widest shadow-sm">
+              BETA
+            </span>
           </h1>
           <p className="text-[#8b949e] text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
             Paste your Moxfield URL, Archidekt link, or raw decklist. Set your target budget, and our vector engine automatically swaps expensive cards to fit your budget.
