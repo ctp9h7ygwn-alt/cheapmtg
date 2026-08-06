@@ -31,7 +31,7 @@ export async function GET(request: Request) {
 
     const total = parseInt(countRes.rows[0].total, 10);
 
-    const cards = res.rows.map((row) => ({
+    const cards = res.rows.map((row: any) => ({
       oracle_id: row.oracle_id,
       name: row.name,
       type_line: row.type_line,

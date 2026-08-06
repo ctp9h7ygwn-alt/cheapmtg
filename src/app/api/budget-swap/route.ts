@@ -128,7 +128,7 @@ export async function GET(request: Request) {
       `SELECT tag FROM oracle_tags WHERE card_oracle_id = $1`,
       [targetCard.oracle_id]
     );
-    const targetTags = tagsRes.rows.map((r) => r.tag);
+    const targetTags = tagsRes.rows.map((r: any) => r.tag);
 
     // 2. Ensure embedding vector exists
     let embeddingSql = targetCard.embedding_str;
@@ -226,7 +226,7 @@ export async function GET(request: Request) {
     );
 
     // 4. Format Recommendations & Calculate Savings
-    const alternatives = candidatesRes.rows.map((cand) => {
+    const alternatives = candidatesRes.rows.map((cand: any) => {
       const price = parseFloat(cand.price_usd);
       const dollarSavings = targetPrice > 0 ? Math.max(0, targetPrice - price) : 0;
       const percentSavings = targetPrice > 0 ? Math.round((dollarSavings / targetPrice) * 100) : 0;
@@ -270,7 +270,7 @@ export async function GET(request: Request) {
         price_usd: targetPrice,
         scryfall_uri: targetCard.scryfall_uri,
         image_uri: targetCard.image_uri,
-        oracle_tags: targetTags.map((t) => t.replace('otag:', '')),
+        oracle_tags: targetTags.map((t: string) => t.replace('otag:', '')),
         primary_types: targetPrimaryTypes,
       },
       filters: {

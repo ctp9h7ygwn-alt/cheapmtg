@@ -40,7 +40,7 @@ export async function GET(request: Request) {
           const scryfallData = await scryfallRes.json();
           const apiCards = scryfallData.data || [];
 
-          const existingOracleIds = new Set(dbCards.map((c) => c.oracle_id));
+          const existingOracleIds = new Set(dbCards.map((c: any) => c.oracle_id));
 
           for (const card of apiCards) {
             if (card.oracle_id && !existingOracleIds.has(card.oracle_id)) {

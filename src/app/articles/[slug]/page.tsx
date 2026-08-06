@@ -100,7 +100,7 @@ async function getArticleData(slug: string) {
 
   // Fetch Tags
   const tagsRes = await query(`SELECT tag FROM oracle_tags WHERE card_oracle_id = $1`, [targetCard.oracle_id]);
-  const targetTags = tagsRes.rows.map((r) => r.tag);
+  const targetTags = tagsRes.rows.map((r: any) => r.tag);
 
   // Embedding
   let embeddingSql = targetCard.embedding_str;
@@ -149,7 +149,7 @@ async function getArticleData(slug: string) {
     [targetCard.oracle_id, embeddingSql, maxPrice, targetCard.color_identity || []]
   );
 
-  const alternatives = candidatesRes.rows.map((cand) => {
+  const alternatives = candidatesRes.rows.map((cand: any) => {
     const price = parseFloat(cand.price_usd);
     const dollarSavings = targetPrice > 0 ? Math.max(0, targetPrice - price) : 0;
     const percentSavings = targetPrice > 0 ? Math.round((dollarSavings / targetPrice) * 100) : 0;
@@ -211,7 +211,7 @@ async function getArticleData(slug: string) {
       color_identity: targetCard.color_identity || [],
       price_usd: targetPrice,
       image_uri: targetCard.image_uri,
-      oracle_tags: targetTags.map((t) => t.replace('otag:', '')),
+      oracle_tags: targetTags.map((t: string) => t.replace('otag:', '')),
     },
     alternatives,
   };
@@ -399,7 +399,7 @@ export default async function DynamicArticlePage({ params }: Props) {
             </div>
           ) : (
             <div className="space-y-6">
-              {alternatives.map((swap, idx) => (
+              {alternatives.map((swap: any, idx: number) => (
                 <div key={swap.oracle_id} className="glass-card rounded-3xl p-6 border border-white/10 space-y-4">
                   {/* Header Badges */}
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3">
