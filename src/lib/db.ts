@@ -7,6 +7,8 @@ export const pool =
   new Pool({
     connectionString:
       process.env.DATABASE_URL ||
+      process.env.POSTGRES_URL ||
+      process.env.POSTGRES_PRISMA_URL ||
       'postgres://postgres:postgres@localhost:5432/cheapmtg',
     max: 10,
     idleTimeoutMillis: 30000,
