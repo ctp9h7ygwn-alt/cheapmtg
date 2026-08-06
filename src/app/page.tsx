@@ -786,7 +786,142 @@ function SwapEngineContent() {
             </Link>
           </div>
         </section>
+
+        {/* How MTGCheap Works Section */}
+        <section className="pt-12 border-t border-white/10 space-y-8">
+          <div className="text-center space-y-2 max-w-2xl mx-auto">
+            <h2 className="font-cinzel text-3xl font-bold text-white">How MTGCheap Works</h2>
+            <p className="text-xs text-[#8b949e]">
+              Machine Learning Vector Similarity & Functional Oracle Tag Matching
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="glass-card rounded-3xl p-6 border border-white/10 space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-sm">
+                1
+              </div>
+              <h3 className="font-cinzel text-lg font-bold text-white">Scryfall Functional Tag Analysis</h3>
+              <p className="text-xs text-[#8b949e] leading-relaxed">
+                Every Magic: The Gathering card is indexed with functional game mechanics (such as <code className="text-amber-300">#tax</code>, <code className="text-amber-300">#card-draw</code>, <code className="text-amber-300">#counterspell</code>, or <code className="text-amber-300">#mana-rock</code>) extracted from official Scryfall oracle tags.
+              </p>
+            </div>
+
+            <div className="glass-card rounded-3xl p-6 border border-white/10 space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold text-sm">
+                2
+              </div>
+              <h3 className="font-cinzel text-lg font-bold text-white">384-Dim Machine Learning Embeddings</h3>
+              <p className="text-xs text-[#8b949e] leading-relaxed">
+                We compute 384-dimensional dense semantic vector embeddings for every card using Machine Learning feature extraction. This captures deep strategic relationships across mana costs, rules text, and card categories.
+              </p>
+            </div>
+
+            <div className="glass-card rounded-3xl p-6 border border-white/10 space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-sm">
+                3
+              </div>
+              <h3 className="font-cinzel text-lg font-bold text-white">HNSW Cosine Distance Querying</h3>
+              <p className="text-xs text-[#8b949e] leading-relaxed">
+                Our PostgreSQL database leverages <code className="text-emerald-300">pgvector</code> HNSW vector indexes to execute real-time cosine distance similarity queries. It enforces tournament legality, filters color identity rules, and returns top budget substitutes in milliseconds.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Frequently Asked Questions (FAQ) Section */}
+        <section className="pt-12 border-t border-white/10 space-y-8 max-w-4xl mx-auto">
+          <div className="text-center space-y-2">
+            <h2 className="font-cinzel text-3xl font-bold text-white">Frequently Asked Questions</h2>
+            <p className="text-xs text-[#8b949e]">Everything you need to know about CheapMTG and Machine Learning budget card swaps.</p>
+          </div>
+
+          <div className="space-y-4">
+            <FaqItem
+              question="What is CheapMTG?"
+              answer="CheapMTG (MTGCheap) is a Machine Learning vector-powered budget card swap engine for Magic: The Gathering. It analyzes expensive tournament and Commander staples and retrieves contextually accurate, lower-cost functional replacements to help players build powerful budget decks."
+            />
+            <FaqItem
+              question="How does CheapMTG calculate card similarity?"
+              answer="Instead of basic keyword searching, CheapMTG evaluates cards across 384 Machine Learning vector dimensions and functional Scryfall oracle tags. It analyzes rules text, mana value, color identity, and game roles to find budget cards that fill the exact same strategic purpose."
+            />
+            <FaqItem
+              question="Are Un-sets or silver-bordered cards excluded by default?"
+              answer="Yes. By default, CheapMTG excludes silver-bordered cards, playtest cards, stickers, attractions, and un-cards. You can toggle Un-sets ON or OFF in the filter settings if you play casual house-rule formats."
+            />
+            <FaqItem
+              question="How does the Commander Deck Budgetizer work?"
+              answer="The Deck Budgetizer lets you paste a Moxfield URL, Archidekt link, or text decklist, set a target budget (e.g. $50, $100, $200), and automatically swaps high-priced generic staples for vector-matched budget alternatives while preserving irreplaceable core synergy cards."
+            />
+            <FaqItem
+              question="Is CheapMTG free to use?"
+              answer="Yes! CheapMTG is 100% free for all Magic: The Gathering players, deckbuilders, and Commander enthusiasts. With 100% transparency, the only revenue we generate to maintain the database server infrastructure comes from affiliate links when you purchase cards through TCGplayer or Mana Pool."
+            />
+          </div>
+        </section>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 bg-[#030508] mt-20 py-12 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="space-y-3 md:col-span-2">
+              <Link href="/" className="flex items-center gap-2 shrink-0">
+                <img src="/logo.png" alt="MTGCheap Logo" className="h-10 w-auto object-contain" />
+              </Link>
+              <p className="text-xs text-[#8b949e] leading-relaxed max-w-sm">
+                Machine Learning Vector-Powered MTG Budget Swap Engine & Commander Deck Optimization.
+              </p>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <h4 className="font-bold text-white font-mono uppercase tracking-wider">Quick Links</h4>
+              <ul className="space-y-1.5 text-[#8b949e]">
+                <li><Link href="/" className="hover:text-amber-400 transition-colors">Swap Engine</Link></li>
+                <li><Link href="/deck-budgetizer" className="hover:text-amber-400 transition-colors">Deck Budgetizer</Link></li>
+                <li><Link href="/articles" className="hover:text-amber-400 transition-colors">Articles & Strategy</Link></li>
+              </ul>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <h4 className="font-bold text-white font-mono uppercase tracking-wider">Popular Guides</h4>
+              <ul className="space-y-1.5 text-[#8b949e]">
+                <li><Link href="/articles/budget-options-for-rhystic-study" className="hover:text-amber-400 transition-colors">Rhystic Study Budget Alternatives</Link></li>
+                <li><Link href="/articles/budget-options-for-the-one-ring" className="hover:text-amber-400 transition-colors">The One Ring Budget Alternatives</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-white/5 pt-6 text-[11px] text-[#8b949e] space-y-2 leading-relaxed">
+            <p>
+              CheapMTG is unofficial Fan Content permitted under the Wizards of the Coast Fan Content Policy. Portions of the materials used are property of Wizards of the Coast. © Wizards of the Coast LLC. Magic: The Gathering is a registered trademark of Wizards of the Coast. Card imagery provided by Scryfall.
+            </p>
+            <p className="text-[#6e7681]">
+              © 2026 CheapMTG. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function FaqItem({ question, answer }: { question: string; answer: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="glass-card rounded-2xl border border-white/10 overflow-hidden transition-all">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-6 py-4 text-left flex items-center justify-between text-white font-bold text-sm sm:text-base hover:text-amber-300 transition-colors"
+      >
+        <span>{question}</span>
+        <span className="text-amber-400 font-mono text-lg shrink-0 ml-4">{isOpen ? '−' : '+'}</span>
+      </button>
+      {isOpen && (
+        <div className="px-6 pb-4 text-xs sm:text-sm text-[#8b949e] leading-relaxed border-t border-white/5 pt-3 animate-fadeIn">
+          {answer}
+        </div>
+      )}
     </div>
   );
 }
