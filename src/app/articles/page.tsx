@@ -76,17 +76,17 @@ export default async function ArticlesIndexPage() {
 
       {/* Header Bar */}
       <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#05070a]/80 backdrop-blur-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <img src="/logo.png" alt="MTGCheap Logo" className="h-14 sm:h-16 w-auto object-contain" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
+            <img src="/logo.png" alt="MTGCheap Logo" className="h-10 sm:h-14 w-auto object-contain" />
           </Link>
 
-          <nav className="flex items-center gap-6 text-xs font-semibold">
+          <nav className="flex items-center gap-3 sm:gap-6 text-xs font-semibold">
             <Link href="/" className="text-[#8b949e] hover:text-white transition-colors">
               Swap Engine
             </Link>
             <Link href="/articles" className="text-amber-400 font-bold border-b border-amber-400 pb-0.5">
-              Articles & Guides
+              Articles
             </Link>
           </nav>
         </div>

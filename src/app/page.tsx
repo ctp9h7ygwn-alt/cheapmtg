@@ -266,18 +266,18 @@ function SwapEngineContent() {
 
       {/* Glassmorphic Sticky Header */}
       <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#05070a]/80 backdrop-blur-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <img src="/logo.png" alt="MTGCheap Logo" className="h-14 sm:h-16 w-auto object-contain" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
+            <img src="/logo.png" alt="MTGCheap Logo" className="h-10 sm:h-14 w-auto object-contain" />
           </Link>
 
-          <div className="flex items-center gap-6">
-            <nav className="flex items-center gap-6 text-xs font-semibold">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <nav className="flex items-center gap-3 sm:gap-6 text-xs font-semibold">
               <Link href="/" className="text-amber-400 border-b border-amber-400 pb-0.5 font-bold">
                 Swap Engine
               </Link>
-              <Link href="/articles" className="text-[#8b949e] hover:text-white transition-colors flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Articles & Blog
+              <Link href="/articles" className="text-[#8b949e] hover:text-white transition-colors flex items-center gap-1">
+                <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Articles
               </Link>
             </nav>
           </div>
@@ -478,7 +478,7 @@ function SwapEngineContent() {
         ) : targetCard ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Target Card Spotlight Pane (4 cols) */}
-            <aside className="lg:col-span-4 glass-panel rounded-3xl p-6 shadow-2xl border border-white/10 space-y-6 sticky top-28">
+            <aside className="lg:col-span-4 glass-panel rounded-3xl p-6 shadow-2xl border border-white/10 space-y-6 lg:sticky lg:top-28">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
