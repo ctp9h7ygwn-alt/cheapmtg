@@ -13,7 +13,7 @@ const cinzel = Cinzel({
   variable: '--font-cinzel',
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cheapmtg.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
