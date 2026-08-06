@@ -160,9 +160,6 @@ export default function DeckBudgetizerPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10 relative z-10">
         {/* Hero Banner */}
         <section className="text-center space-y-4 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Powered by pgvector Embeddings
-          </div>
           <h1 className="font-cinzel text-4xl sm:text-5xl font-black leading-tight gradient-text-gold">
             Commander Deck Budgetizer
           </h1>
