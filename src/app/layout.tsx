@@ -56,6 +56,14 @@ export const metadata: Metadata = {
       'Find lower-cost functional budget alternatives for Magic: The Gathering cards and Commander decks.',
     url: siteUrl,
     siteName: 'MTGCheap',
+    images: [
+      {
+        url: `${siteUrl}/icon-512.png`,
+        width: 512,
+        height: 512,
+        alt: 'MTGCheap Logo',
+      },
+    ],
     locale: 'en_US',
     type: 'website',
   },
@@ -64,6 +72,7 @@ export const metadata: Metadata = {
     title: 'MTGCheap | Find Budget Alternatives for Magic Cards',
     description:
       'Find lower-cost functional budget alternatives for Magic: The Gathering cards and Commander decks.',
+    images: [`${siteUrl}/icon-512.png`],
   },
   robots: {
     index: true,
