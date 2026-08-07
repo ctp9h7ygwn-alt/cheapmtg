@@ -157,7 +157,6 @@ export async function GET(request: Request) {
           c.oracle_id,
           c.name,
           c.mana_value,
-          c.mana_cost,
           c.colors,
           c.color_identity,
           c.type_line,

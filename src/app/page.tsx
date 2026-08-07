@@ -228,52 +228,48 @@ function SwapEngineContent() {
   }
 
   function ManaPips({ manaCost, manaValue, colors }: { manaCost?: string; manaValue?: number; colors?: string[] }) {
-    if (!manaCost) {
-      if (!colors || colors.length === 0) {
-        if (manaValue !== undefined && manaValue > 0) {
-          return (
-            <span className="w-5 h-5 rounded-full bg-slate-800 text-white font-extrabold text-[11px] font-mono border border-slate-600 flex items-center justify-center shadow-sm shrink-0">
-              {manaValue}
-            </span>
-          );
-        }
-        return null;
+    if (manaCost && manaCost.includes('{')) {
+      const pips = manaCost.match(/\{([^}]+)\}/g)?.map((s) => s.replace(/[\{\}]/g, '')) || [];
+      if (pips.length > 0) {
+        return (
+          <div className="inline-flex items-center gap-1 shrink-0">
+            {pips.map((pip, idx) => {
+              const style = getSinglePipStyle(pip);
+              return (
+                <span
+                  key={idx}
+                  className={`w-5 h-5 rounded-full font-extrabold text-[11px] font-mono flex items-center justify-center border shadow-sm ${style}`}
+                >
+                  {pip}
+                </span>
+              );
+            })}
+          </div>
+        );
       }
-      return (
-        <div className="inline-flex items-center gap-1 shrink-0">
-          {manaValue !== undefined && manaValue > 0 && (
-            <span className="w-5 h-5 rounded-full bg-slate-800 text-white font-extrabold text-[11px] font-mono border border-slate-600 flex items-center justify-center shadow-sm">
-              {manaValue}
-            </span>
-          )}
-          {colors.map((c) => {
-            const badgeStyle = getSinglePipStyle(c);
-            return (
-              <span
-                key={c}
-                className={`w-5 h-5 rounded-full font-extrabold text-[11px] font-mono flex items-center justify-center border shadow-sm ${badgeStyle}`}
-              >
-                {c}
-              </span>
-            );
-          })}
-        </div>
-      );
     }
 
-    const pips = manaCost.match(/\{([^}]+)\}/g)?.map((s) => s.replace(/[\{\}]/g, '')) || [];
-    if (pips.length === 0) return null;
+    const mv = manaValue || 0;
+    const cols = colors || [];
+    const genericCost = Math.max(0, Math.round(mv - cols.length));
+
+    if (mv === 0 && cols.length === 0) return null;
 
     return (
       <div className="inline-flex items-center gap-1 shrink-0">
-        {pips.map((pip, idx) => {
-          const style = getSinglePipStyle(pip);
+        {genericCost > 0 && (
+          <span className="w-5 h-5 rounded-full bg-slate-800 text-white font-extrabold text-[11px] font-mono border border-slate-600 flex items-center justify-center shadow-sm">
+            {genericCost}
+          </span>
+        )}
+        {cols.map((c) => {
+          const badgeStyle = getSinglePipStyle(c);
           return (
             <span
-              key={idx}
-              className={`w-5 h-5 rounded-full font-extrabold text-[11px] font-mono flex items-center justify-center border shadow-sm ${style}`}
+              key={c}
+              className={`w-5 h-5 rounded-full font-extrabold text-[11px] font-mono flex items-center justify-center border shadow-sm ${badgeStyle}`}
             >
-              {pip}
+              {c}
             </span>
           );
         })}
