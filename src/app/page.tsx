@@ -41,6 +41,7 @@ interface TargetCard {
   oracle_id: string;
   name: string;
   mana_value: number;
+  mana_cost?: string;
   colors: string[];
   color_identity: string[];
   type_line: string;
@@ -56,6 +57,7 @@ interface AlternativeCard {
   oracle_id: string;
   name: string;
   mana_value: number;
+  mana_cost?: string;
   colors: string[];
   color_identity: string[];
   type_line: string;
@@ -212,6 +214,72 @@ function SwapEngineContent() {
     setSearchQuery(name);
     setShowDropdown(false);
   };
+
+  function getSinglePipStyle(pip: string): string {
+    const p = pip.toUpperCase();
+    if (p === 'W') return 'bg-gradient-to-br from-amber-100 to-amber-200 text-amber-950 border-amber-300 shadow-[0_0_6px_rgba(251,191,36,0.3)]';
+    if (p === 'U') return 'bg-gradient-to-br from-blue-500 to-cyan-600 text-white border-blue-300 shadow-[0_0_6px_rgba(59,130,246,0.4)]';
+    if (p === 'B') return 'bg-gradient-to-br from-slate-900 to-zinc-950 text-slate-200 border-slate-700 shadow-[0_0_6px_rgba(0,0,0,0.5)]';
+    if (p === 'R') return 'bg-gradient-to-br from-red-500 to-rose-600 text-white border-red-300 shadow-[0_0_6px_rgba(239,68,68,0.4)]';
+    if (p === 'G') return 'bg-gradient-to-br from-emerald-500 to-green-600 text-white border-emerald-300 shadow-[0_0_6px_rgba(16,185,129,0.4)]';
+    if (p === 'C') return 'bg-zinc-400 text-zinc-900 border-zinc-300';
+    if (p === 'X' || p === 'Y' || p === 'Z') return 'bg-slate-700 text-amber-300 border-slate-500';
+    return 'bg-slate-800 text-white border-slate-600';
+  }
+
+  function ManaPips({ manaCost, manaValue, colors }: { manaCost?: string; manaValue?: number; colors?: string[] }) {
+    if (!manaCost) {
+      if (!colors || colors.length === 0) {
+        if (manaValue !== undefined && manaValue > 0) {
+          return (
+            <span className="w-5 h-5 rounded-full bg-slate-800 text-white font-extrabold text-[11px] font-mono border border-slate-600 flex items-center justify-center shadow-sm shrink-0">
+              {manaValue}
+            </span>
+          );
+        }
+        return null;
+      }
+      return (
+        <div className="inline-flex items-center gap-1 shrink-0">
+          {manaValue !== undefined && manaValue > 0 && (
+            <span className="w-5 h-5 rounded-full bg-slate-800 text-white font-extrabold text-[11px] font-mono border border-slate-600 flex items-center justify-center shadow-sm">
+              {manaValue}
+            </span>
+          )}
+          {colors.map((c) => {
+            const badgeStyle = getSinglePipStyle(c);
+            return (
+              <span
+                key={c}
+                className={`w-5 h-5 rounded-full font-extrabold text-[11px] font-mono flex items-center justify-center border shadow-sm ${badgeStyle}`}
+              >
+                {c}
+              </span>
+            );
+          })}
+        </div>
+      );
+    }
+
+    const pips = manaCost.match(/\{([^}]+)\}/g)?.map((s) => s.replace(/[\{\}]/g, '')) || [];
+    if (pips.length === 0) return null;
+
+    return (
+      <div className="inline-flex items-center gap-1 shrink-0">
+        {pips.map((pip, idx) => {
+          const style = getSinglePipStyle(pip);
+          return (
+            <span
+              key={idx}
+              className={`w-5 h-5 rounded-full font-extrabold text-[11px] font-mono flex items-center justify-center border shadow-sm ${style}`}
+            >
+              {pip}
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
 
   const getColorBadge = (color: string) => {
     const map: Record<string, { bg: string; text: string; label: string; border: string }> = {
@@ -490,9 +558,12 @@ function SwapEngineContent() {
                   <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
                     TARGET CARD
                   </span>
-                  <h3 className="font-cinzel text-2xl font-bold text-white leading-tight">{targetCard.name}</h3>
+                  <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                    <h3 className="font-cinzel text-2xl font-bold text-white leading-tight">{targetCard.name}</h3>
+                    <ManaPips manaCost={targetCard.mana_cost} manaValue={targetCard.mana_value} colors={targetCard.colors} />
+                  </div>
                 </div>
-                <div className="text-right font-mono">
+                <div className="text-right font-mono shrink-0 pl-2">
                   <span className="text-[10px] text-[#8b949e] block uppercase">Market</span>
                   <span className="text-xl font-black text-amber-400 font-mono">${targetCard.price_usd.toFixed(2)}</span>
                 </div>
@@ -650,9 +721,12 @@ function SwapEngineContent() {
                           </div>
 
                           <div className="space-y-1.5 flex-1">
-                            <h4 className="font-cinzel font-bold text-white text-lg group-hover:text-amber-300 transition-colors leading-tight">
-                              {alt.name}
-                            </h4>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="font-cinzel font-bold text-white text-lg group-hover:text-amber-300 transition-colors leading-tight">
+                                {alt.name}
+                              </h4>
+                              <ManaPips manaCost={alt.mana_cost} manaValue={alt.mana_value} colors={alt.colors} />
+                            </div>
                             <p className="text-xs text-[#8b949e] line-clamp-1">{alt.type_line}</p>
 
                             {/* Similarity Bar */}
