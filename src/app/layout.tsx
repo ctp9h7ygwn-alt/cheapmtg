@@ -18,18 +18,18 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'CheapMTG | Vector-Powered MTG Budget Swap Engine',
-    template: '%s | CheapMTG',
+    default: 'MTGCheap | Find Budget Alternatives',
+    template: '%s | MTGCheap',
   },
   description:
-    'Find contextually accurate, lower-cost functional MTG card alternatives using pgvector embeddings and Scryfall oracle tags.',
+    'Find contextually accurate, lower-cost functional MTG card alternatives using machine learning embeddings and Scryfall oracle tags.',
   keywords: [
     'MTG budget cards',
     'Magic: The Gathering budget swaps',
     'Commander budget alternatives',
     'cheap MTG cards',
     'EDH budget staples',
-    'pgvector MTG search',
+    'MTGCheap',
   ],
   alternates: {
     canonical: siteUrl,
@@ -44,19 +44,19 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'CheapMTG | Vector-Powered MTG Budget Swap Engine',
+    title: 'MTGCheap | Find Budget Alternatives',
     description:
-      'Find contextually accurate, lower-cost functional MTG card alternatives using pgvector embeddings and Scryfall oracle tags.',
+      'Find contextually accurate, lower-cost functional MTG card alternatives using machine learning embeddings and Scryfall oracle tags.',
     url: siteUrl,
-    siteName: 'CheapMTG',
+    siteName: 'MTGCheap',
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'CheapMTG | Vector-Powered MTG Budget Swap Engine',
+    title: 'MTGCheap | Find Budget Alternatives',
     description:
-      'Find contextually accurate, lower-cost functional MTG card alternatives using pgvector embeddings and Scryfall oracle tags.',
+      'Find contextually accurate, lower-cost functional MTG card alternatives using machine learning embeddings and Scryfall oracle tags.',
   },
   robots: {
     index: true,

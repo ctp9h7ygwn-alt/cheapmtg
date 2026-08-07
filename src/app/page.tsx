@@ -362,7 +362,7 @@ function SwapEngineContent() {
             Find Functional Budget Swaps
           </h1>
           <p className="text-[#8b949e] text-base leading-relaxed max-w-2xl mx-auto">
-            Analyze any high-cost MTG staple and retrieve lower-cost alternatives.
+            MTGCheap | Find budget alternatives for any high-cost Magic card or Commander staple.
           </p>
 
           {/* Autocomplete Search Bar */}
@@ -911,24 +911,24 @@ function SwapEngineContent() {
 
           <div className="space-y-4">
             <FaqItem
-              question="What is CheapMTG?"
-              answer="CheapMTG (MTGCheap) is a Machine Learning vector-powered budget card swap engine for Magic: The Gathering. It analyzes expensive tournament and Commander staples and retrieves contextually accurate, lower-cost functional replacements to help players build powerful budget decks."
+              question="What is MTGCheap?"
+              answer="MTGCheap is a Machine Learning budget card swap engine for Magic: The Gathering. It analyzes expensive tournament and Commander staples and retrieves contextually accurate, lower-cost functional replacements to help players build powerful budget decks."
             />
             <FaqItem
-              question="How does CheapMTG calculate card similarity?"
-              answer="Instead of basic keyword searching, CheapMTG evaluates cards across 384 Machine Learning vector dimensions and functional Scryfall oracle tags. It analyzes rules text, mana value, color identity, and game roles to find budget cards that fill the exact same strategic purpose."
+              question="How does MTGCheap calculate card similarity?"
+              answer="Instead of basic keyword searching, MTGCheap evaluates cards across 384 Machine Learning vector dimensions and functional Scryfall oracle tags. It analyzes rules text, mana value, color identity, and game roles to find budget cards that fill the exact same strategic purpose."
             />
             <FaqItem
               question="Are Un-sets or silver-bordered cards excluded by default?"
-              answer="Yes. By default, CheapMTG excludes silver-bordered cards, playtest cards, stickers, attractions, and un-cards. You can toggle Un-sets ON or OFF in the filter settings if you play casual house-rule formats."
+              answer="Yes. By default, MTGCheap excludes silver-bordered cards, playtest cards, stickers, attractions, and un-cards. You can toggle Un-sets ON or OFF in the filter settings if you play casual house-rule formats."
             />
             <FaqItem
               question="How does the Commander Deck Budgetizer work?"
-              answer="The Deck Budgetizer lets you paste a Moxfield URL, Archidekt link, or text decklist, set a target budget (e.g. $50, $100, $200), and automatically swaps high-priced generic staples for vector-matched budget alternatives while preserving irreplaceable core synergy cards."
+              answer="The Deck Budgetizer lets you paste a Moxfield URL, Archidekt link, or text decklist, set a target budget (e.g. $50, $100, $200), and automatically swaps high-priced generic staples for budget alternatives while preserving irreplaceable core synergy cards."
             />
             <FaqItem
-              question="Is CheapMTG free to use?"
-              answer="Yes! CheapMTG is 100% free for all Magic: The Gathering players, deckbuilders, and Commander enthusiasts. With 100% transparency, the only revenue we generate to maintain the database server infrastructure comes from affiliate links when you purchase cards through TCGplayer or Mana Pool."
+              question="Is MTGCheap free to use?"
+              answer="Yes! MTGCheap is 100% free for all Magic: The Gathering players, deckbuilders, and Commander enthusiasts. With 100% transparency, the only revenue we generate to maintain the database server infrastructure comes from affiliate links when you purchase cards through TCGplayer or Mana Pool."
             />
           </div>
         </section>
@@ -943,7 +943,7 @@ function SwapEngineContent() {
                 <img src="/logo.png" alt="MTGCheap Logo" className="h-10 w-auto object-contain" />
               </Link>
               <p className="text-xs text-[#8b949e] leading-relaxed max-w-sm">
-                Machine Learning Vector-Powered MTG Budget Swap Engine & Commander Deck Optimization.
+                MTGCheap | Find budget alternatives for Magic: The Gathering & Commander decks.
               </p>
             </div>
 
