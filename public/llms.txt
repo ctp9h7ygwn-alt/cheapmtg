@@ -1,0 +1,17 @@
+# MTGCheap
+
+> MTGCheap is an AI and Machine Learning budget card swap engine and deck optimizer for Magic: The Gathering and Commander (EDH).
+
+## Overview
+MTGCheap helps Magic: The Gathering players find budget alternatives to expensive tournament and Commander staples. By leveraging 384-dimensional dense semantic vector embeddings and Scryfall functional oracle tags, MTGCheap identifies contextually accurate, lower-cost card replacements while preserving mechanical synergy and color identity rules.
+
+## Core Features
+- **Swap Engine**: Instant vector-based card replacement tool (`https://www.mtgcheap.com`)
+- **Commander Deck Budgetizer**: Paste a Moxfield or Archidekt deck URL and specify a target budget to automatically replace expensive staples (`https://www.mtgcheap.com/deck-budgetizer`)
+- **Strategy & Analysis Articles**: Deep dives into budget alternatives for top Commander staples (`https://www.mtgcheap.com/articles`)
+
+## API & Endpoints
+- Card Search API: `GET https://www.mtgcheap.com/api/cards/search?q={query}`
+- Single Card Budget Swap API: `GET https://www.mtgcheap.com/api/budget-swap?target_card_name={card_name}&max_price={max_price}`
+- Deck Budgetizer API: `POST https://www.mtgcheap.com/api/deck-budgetizer`
+- Articles Index API: `GET https://www.mtgcheap.com/api/articles`

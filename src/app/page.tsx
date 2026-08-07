@@ -358,8 +358,8 @@ function SwapEngineContent() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10 relative z-10">
         {/* Hero Section */}
         <section className="text-center space-y-6 max-w-3xl mx-auto pt-2">
-          <h1 className="font-cinzel text-4xl sm:text-5xl font-black tracking-wide leading-tight gradient-text-gold">
-            Find Functional Budget Swaps
+          <h1 className="font-cinzel text-3xl sm:text-5xl font-black tracking-wide leading-tight gradient-text-gold">
+            MTGCheap | Find Budget Alternatives for Magic Cards
           </h1>
           <p className="text-[#8b949e] text-base leading-relaxed max-w-2xl mx-auto">
             MTGCheap | Find budget alternatives for any high-cost Magic card or Commander staple.
@@ -555,7 +555,7 @@ function SwapEngineContent() {
                     TARGET CARD
                   </span>
                   <div className="flex items-center gap-2 flex-wrap mt-0.5">
-                    <h3 className="font-cinzel text-2xl font-bold text-white leading-tight">{targetCard.name}</h3>
+                    <h2 className="font-cinzel text-2xl font-bold text-white leading-tight">{targetCard.name}</h2>
                     <ManaPips manaCost={targetCard.mana_cost} manaValue={targetCard.mana_value} colors={targetCard.colors} />
                   </div>
                 </div>
@@ -652,12 +652,12 @@ function SwapEngineContent() {
             <section className="lg:col-span-8 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-cinzel text-2xl font-bold text-white flex items-center gap-3">
+                  <h2 className="font-cinzel text-2xl font-bold text-white flex items-center gap-3">
                     Budget Alternatives
                     <span className="text-xs font-sans font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
                       {alternatives.length} Swaps Found
                     </span>
-                  </h3>
+                  </h2>
                   <p className="text-xs text-[#8b949e] mt-1 font-sans">
                     Filtered by Color Identity ≤ target ({targetCard.color_identity.join('') || 'C'}) & Price ≤ ${maxPrice.toFixed(2)}
                     {matchCardType && targetCard.primary_types && ` (Matching Type: ${targetCard.primary_types.join(', ')})`}
@@ -718,9 +718,9 @@ function SwapEngineContent() {
 
                           <div className="space-y-1.5 flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h4 className="font-cinzel font-bold text-white text-lg group-hover:text-amber-300 transition-colors leading-tight">
+                              <h3 className="font-cinzel font-bold text-white text-lg group-hover:text-amber-300 transition-colors leading-tight">
                                 {alt.name}
-                              </h4>
+                              </h3>
                               <ManaPips manaCost={alt.mana_cost} manaValue={alt.mana_value} colors={alt.colors} />
                             </div>
                             <p className="text-xs text-[#8b949e] line-clamp-1">{alt.type_line}</p>
@@ -804,9 +804,9 @@ function SwapEngineContent() {
         <section className="pt-12 border-t border-white/10 space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-cinzel text-2xl font-bold text-white flex items-center gap-2">
+              <h2 className="font-cinzel text-2xl font-bold text-white flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-amber-400" /> Featured Budget Strategy Articles
-              </h3>
+              </h2>
               <p className="text-xs text-[#8b949e] mt-0.5">
                 In-depth vector analysis and deckbuilding guides for top Commander staples.
               </p>
@@ -828,9 +828,9 @@ function SwapEngineContent() {
                 <span className="text-amber-400 font-bold">Commander Staples</span>
                 <span>6 min read</span>
               </div>
-              <h4 className="font-cinzel font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
+              <h3 className="font-cinzel font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
                 Top 5 Budget Alternatives to Rhystic Study in Commander
-              </h4>
+              </h3>
               <p className="text-xs text-[#8b949e] line-clamp-2 leading-relaxed">
                 Discover vector-matched alternatives like Unifying Theory ($0.44) and Soul Barrier ($0.25) that deliver taxation and card draw for 99% less.
               </p>
@@ -847,9 +847,9 @@ function SwapEngineContent() {
                 <span className="text-cyan-400 font-bold">Artifact Staples</span>
                 <span>7 min read</span>
               </div>
-              <h4 className="font-cinzel font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
+              <h3 className="font-cinzel font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
                 Best Budget Alternatives to The One Ring for EDH
-              </h4>
+              </h3>
               <p className="text-xs text-[#8b949e] line-clamp-2 leading-relaxed">
                 Explore budget replacements like Loreseeker’s Stone ($0.28) and Staff of Compleation ($4.26) for under $5.
               </p>
