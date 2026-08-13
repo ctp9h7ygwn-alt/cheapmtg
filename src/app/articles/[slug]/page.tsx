@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { query } from '@/lib/db';
 import { generateEmbedding } from '@/lib/embeddings';
 import Footer from '../../components/Footer';
+import ExpandableCardImage from '../../components/ExpandableCardImage';
 import {
   Sparkles,
   ArrowRight,
@@ -443,17 +444,12 @@ export default async function DynamicArticlePage({ params }: Props) {
         {/* Target Card Highlight */}
         <div className="glass-panel rounded-3xl p-6 border border-white/10 flex flex-col md:flex-row gap-6 items-center">
           <div className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16] relative">
-            {targetCard.image_uri ? (
-              <Image
-                src={targetCard.image_uri}
-                alt={`Magic: The Gathering card image for ${targetCard.name} (${targetCard.type_line})`}
-                fill
-                sizes="160px"
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-xs text-[#8b949e]">No Image</div>
-            )}
+            <ExpandableCardImage
+              src={targetCard.image_uri}
+              alt={`Magic: The Gathering card image for ${targetCard.name} (${targetCard.type_line})`}
+              title={targetCard.name}
+              sizes="160px"
+            />
           </div>
 
           <div className="space-y-3 flex-1 text-xs">
@@ -518,19 +514,12 @@ export default async function DynamicArticlePage({ params }: Props) {
                   {/* Card Image & Information */}
                   <div className="flex flex-col sm:flex-row gap-5 items-start">
                     <div className="w-28 shrink-0 aspect-[488/680] rounded-xl overflow-hidden border border-white/10 bg-[#05070a] shadow-xl relative">
-                      {swap.image_uri ? (
-                        <Image
-                          src={swap.image_uri}
-                          alt={`Magic: The Gathering budget alternative card image for ${swap.name} (${swap.type_line})`}
-                          fill
-                          sizes="112px"
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[10px] text-[#8b949e]">
-                          No Image
-                        </div>
-                      )}
+                      <ExpandableCardImage
+                        src={swap.image_uri}
+                        alt={`Magic: The Gathering budget alternative card image for ${swap.name} (${swap.type_line})`}
+                        title={swap.name}
+                        sizes="112px"
+                      />
                     </div>
 
                     <div className="space-y-3 flex-1">

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Sparkles, ArrowRight, Clock, Tag, ExternalLink, ShieldCheck, CheckCircle2, TrendingDown, BookOpen, Zap } from 'lucide-react';
 import Footer from '../../components/Footer';
+import ExpandableCardImage from '../../components/ExpandableCardImage';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 const canonicalUrl = `${baseUrl}/articles/budget-options-for-the-one-ring`;
@@ -171,12 +172,11 @@ export default function OneRingArticlePage() {
         {/* Target Card Highlight */}
         <div className="glass-panel rounded-3xl p-6 border border-white/10 flex flex-col md:flex-row gap-6 items-center">
           <div className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16] relative">
-            <Image
+            <ExpandableCardImage
               src="https://cards.scryfall.io/normal/front/d/5/d5806e68-1054-458e-866d-1f2470f682b2.jpg?1783916239"
               alt="The One Ring Magic: The Gathering card"
-              fill
+              title="The One Ring"
               sizes="160px"
-              className="object-cover"
             />
           </div>
 

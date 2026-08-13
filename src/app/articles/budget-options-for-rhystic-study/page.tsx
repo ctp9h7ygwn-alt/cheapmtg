@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Sparkles, ArrowRight, Clock, Tag, ExternalLink, ShieldCheck, CheckCircle2, TrendingDown, BookOpen } from 'lucide-react';
 import Footer from '../../components/Footer';
+import ExpandableCardImage from '../../components/ExpandableCardImage';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 const canonicalUrl = `${baseUrl}/articles/budget-options-for-rhystic-study`;
@@ -179,12 +180,11 @@ export default function RhysticStudyArticlePage() {
         {/* Target Card Highlight */}
         <div className="glass-panel rounded-3xl p-6 border border-white/10 flex flex-col md:flex-row gap-6 items-center">
           <div className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16] relative">
-            <Image
+            <ExpandableCardImage
               src="https://cards.scryfall.io/normal/front/9/f/9f37c5b6-a59c-45cd-9a99-e9357fe9ea1b.jpg?1783919146"
               alt="Rhystic Study Magic: The Gathering card"
-              fill
+              title="Rhystic Study"
               sizes="160px"
-              className="object-cover"
             />
           </div>
 
