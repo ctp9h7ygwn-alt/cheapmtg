@@ -26,6 +26,13 @@ interface Props {
   params: { slug: string };
 }
 
+function slugToCleanName(slug: string): string {
+  return slug
+    .replace(/^budget-options-for-/, '')
+    .replace(/[^a-z0-9]/gi, '')
+    .toLowerCase();
+}
+
 function slugToCardSearchName(slug: string): string {
   return slug
     .replace(/^budget-options-for-/, '')
@@ -34,6 +41,7 @@ function slugToCardSearchName(slug: string): string {
 
 // Fetch card and compute budget swaps on server
 async function getArticleData(slug: string) {
+  const cleanSearch = slugToCleanName(slug);
   const cardSearch = slugToCardSearchName(slug);
 
   // 1. Fetch Target Card from DB or Scryfall API
@@ -41,14 +49,13 @@ async function getArticleData(slug: string) {
     `SELECT c.*, ce.embedding::text AS embedding_str
      FROM cards c
      LEFT JOIN card_embeddings ce ON c.oracle_id = ce.oracle_id
-     WHERE LOWER(c.name) = LOWER($1) OR LOWER(c.name) LIKE LOWER($1) || '%' OR REPLACE(LOWER(c.name), ' ', '-') LIKE '%' || LOWER($1) || '%'
+     WHERE REGEXP_REPLACE(LOWER(c.name), '[^a-z0-9]', '', 'g') = $1
+        OR LOWER(c.name) LIKE LOWER($2) || '%'
      ORDER BY 
-       CASE WHEN LOWER(c.name) = LOWER($1) THEN 0
-            WHEN LOWER(c.name) LIKE LOWER($1) || '%' THEN 1
-            ELSE 2 END,
+       CASE WHEN REGEXP_REPLACE(LOWER(c.name), '[^a-z0-9]', '', 'g') = $1 THEN 0 ELSE 1 END,
        c.price_usd DESC NULLS LAST
      LIMIT 1`,
-    [cardSearch]
+    [cleanSearch, cardSearch]
   );
 
   let targetCard: any = null;
