@@ -171,14 +171,13 @@ export default function OneRingArticlePage() {
 
         {/* Target Card Highlight */}
         <div className="glass-panel rounded-3xl p-6 border border-white/10 flex flex-col md:flex-row gap-6 items-center">
-          <div className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16] relative">
-            <ExpandableCardImage
-              src="https://cards.scryfall.io/normal/front/d/5/d5806e68-1054-458e-866d-1f2470f682b2.jpg?1783916239"
-              alt="The One Ring Magic: The Gathering card"
-              title="The One Ring"
-              sizes="160px"
-            />
-          </div>
+          <ExpandableCardImage
+            src="https://cards.scryfall.io/normal/front/d/5/d5806e68-1054-458e-866d-1f2470f682b2.jpg?1783916239"
+            alt="The One Ring Magic: The Gathering card"
+            title="The One Ring"
+            sizes="160px"
+            className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16]"
+          />
 
           <div className="space-y-3 flex-1 text-xs">
             <div className="flex justify-between items-baseline">

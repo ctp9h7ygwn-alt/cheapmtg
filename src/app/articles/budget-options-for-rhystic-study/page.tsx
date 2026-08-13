@@ -179,14 +179,13 @@ export default function RhysticStudyArticlePage() {
 
         {/* Target Card Highlight */}
         <div className="glass-panel rounded-3xl p-6 border border-white/10 flex flex-col md:flex-row gap-6 items-center">
-          <div className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16] relative">
-            <ExpandableCardImage
-              src="https://cards.scryfall.io/normal/front/9/f/9f37c5b6-a59c-45cd-9a99-e9357fe9ea1b.jpg?1783919146"
-              alt="Rhystic Study Magic: The Gathering card"
-              title="Rhystic Study"
-              sizes="160px"
-            />
-          </div>
+          <ExpandableCardImage
+            src="https://cards.scryfall.io/normal/front/9/f/9f37c5b6-a59c-45cd-9a99-e9357fe9ea1b.jpg?1783919146"
+            alt="Rhystic Study Magic: The Gathering card"
+            title="Rhystic Study"
+            sizes="160px"
+            className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16]"
+          />
 
           <div className="space-y-3 flex-1 text-xs">
             <div className="flex justify-between items-baseline">

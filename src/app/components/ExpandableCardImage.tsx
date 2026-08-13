@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Maximize2, X } from 'lucide-react';
+import { Maximize2, X, Layers } from 'lucide-react';
 
 interface ExpandableCardImageProps {
   src: string;
   alt: string;
   title: string;
   sizes?: string;
-  containerClassName?: string;
   className?: string;
+  imageClassName?: string;
 }
 
 export default function ExpandableCardImage({
@@ -18,8 +18,8 @@ export default function ExpandableCardImage({
   alt,
   title,
   sizes = '100vw',
-  containerClassName = 'w-full h-full',
-  className = 'object-cover',
+  className = 'w-full aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 bg-[#05070a]',
+  imageClassName = 'object-cover',
 }: ExpandableCardImageProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,8 +37,9 @@ export default function ExpandableCardImage({
 
   if (!src) {
     return (
-      <div className="w-full h-full flex items-center justify-center text-xs text-[#8b949e]">
-        No Image
+      <div className={`flex flex-col items-center justify-center p-2 text-center text-[#8b949e] ${className}`}>
+        <Layers className="w-8 h-8 mb-1 text-white/20" />
+        <span className="text-[10px]">No Image</span>
       </div>
     );
   }
@@ -47,7 +48,7 @@ export default function ExpandableCardImage({
     <>
       <div
         onClick={() => setIsOpen(true)}
-        className={`relative cursor-pointer group/img ${containerClassName}`}
+        className={`relative group cursor-pointer ${className}`}
         title={`Click to preview ${title}`}
       >
         <Image
@@ -55,9 +56,9 @@ export default function ExpandableCardImage({
           alt={alt}
           fill
           sizes={sizes}
-          className={`transition-transform duration-300 group-hover/img:scale-105 ${className}`}
+          className={`transition-transform duration-500 group-hover:scale-105 ${imageClassName}`}
         />
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold backdrop-blur-[2px]">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold backdrop-blur-[2px] gap-1.5">
           <Maximize2 className="w-4 h-4 text-amber-300" />
         </div>
       </div>
@@ -69,7 +70,7 @@ export default function ExpandableCardImage({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-md w-full glass-panel rounded-3xl p-4 border border-white/20 shadow-2xl space-y-3 flex flex-col items-center"
+            className="relative max-w-md w-full glass-panel rounded-3xl p-4 border border-white/20 shadow-2xl space-y-3 flex flex-col items-center z-[101]"
           >
             <div className="w-full flex justify-between items-center px-2">
               <h4 className="font-cinzel text-lg font-bold text-white leading-tight">{title}</h4>

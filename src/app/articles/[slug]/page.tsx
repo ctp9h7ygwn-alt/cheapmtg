@@ -443,14 +443,13 @@ export default async function DynamicArticlePage({ params }: Props) {
 
         {/* Target Card Highlight */}
         <div className="glass-panel rounded-3xl p-6 border border-white/10 flex flex-col md:flex-row gap-6 items-center">
-          <div className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16] relative">
-            <ExpandableCardImage
-              src={targetCard.image_uri}
-              alt={`Magic: The Gathering card image for ${targetCard.name} (${targetCard.type_line})`}
-              title={targetCard.name}
-              sizes="160px"
-            />
-          </div>
+          <ExpandableCardImage
+            src={targetCard.image_uri}
+            alt={`Magic: The Gathering card image for ${targetCard.name} (${targetCard.type_line})`}
+            title={targetCard.name}
+            sizes="160px"
+            className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16]"
+          />
 
           <div className="space-y-3 flex-1 text-xs">
             <div className="flex justify-between items-baseline">
@@ -513,14 +512,13 @@ export default async function DynamicArticlePage({ params }: Props) {
 
                   {/* Card Image & Information */}
                   <div className="flex flex-col sm:flex-row gap-5 items-start">
-                    <div className="w-28 shrink-0 aspect-[488/680] rounded-xl overflow-hidden border border-white/10 bg-[#05070a] shadow-xl relative">
-                      <ExpandableCardImage
-                        src={swap.image_uri}
-                        alt={`Magic: The Gathering budget alternative card image for ${swap.name} (${swap.type_line})`}
-                        title={swap.name}
-                        sizes="112px"
-                      />
-                    </div>
+                    <ExpandableCardImage
+                      src={swap.image_uri}
+                      alt={`Magic: The Gathering budget alternative card image for ${swap.name} (${swap.type_line})`}
+                      title={swap.name}
+                      sizes="112px"
+                      className="w-28 shrink-0 aspect-[488/680] rounded-xl overflow-hidden border border-white/10 bg-[#05070a] shadow-xl"
+                    />
 
                     <div className="space-y-3 flex-1">
                       {/* Similarity Bar */}
