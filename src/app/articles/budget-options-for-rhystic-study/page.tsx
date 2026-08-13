@@ -277,7 +277,7 @@ export default function RhysticStudyArticlePage() {
               className="glass-card rounded-2xl p-4 border border-white/10 hover:border-amber-500/50 hover:-translate-y-1 transition-all group space-y-2"
             >
               <div className="font-cinzel font-bold text-xs text-white group-hover:text-amber-300 transition-colors">
-                Budget Options for The One Ring
+                The One Ring
               </div>
               <div className="text-[10px] text-[#8b949e] font-mono">$105.88 Market</div>
               <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1">
@@ -289,7 +289,7 @@ export default function RhysticStudyArticlePage() {
               className="glass-card rounded-2xl p-4 border border-white/10 hover:border-amber-500/50 hover:-translate-y-1 transition-all group space-y-2"
             >
               <div className="font-cinzel font-bold text-xs text-white group-hover:text-amber-300 transition-colors">
-                Budget Options for Cyclonic Rift
+                Cyclonic Rift
               </div>
               <div className="text-[10px] text-[#8b949e] font-mono">$38.00 Market</div>
               <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1">
@@ -301,7 +301,7 @@ export default function RhysticStudyArticlePage() {
               className="glass-card rounded-2xl p-4 border border-white/10 hover:border-amber-500/50 hover:-translate-y-1 transition-all group space-y-2"
             >
               <div className="font-cinzel font-bold text-xs text-white group-hover:text-amber-300 transition-colors">
-                Budget Options for Fierce Guardianship
+                Fierce Guardianship
               </div>
               <div className="text-[10px] text-[#8b949e] font-mono">$42.00 Market</div>
               <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1">

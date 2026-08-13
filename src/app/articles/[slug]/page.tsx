@@ -618,7 +618,7 @@ export default async function DynamicArticlePage({ params }: Props) {
                     </div>
                     <div className="space-y-1">
                       <div className="font-cinzel font-bold text-xs text-white group-hover:text-amber-300 transition-colors line-clamp-1">
-                        Budget Options for {rel.name}
+                        {rel.name}
                       </div>
                       <div className="text-[10px] text-[#8b949e] font-mono">
                         ${rel.price_usd.toFixed(2)} Market
