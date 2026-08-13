@@ -121,16 +121,28 @@ function SwapEngineContent() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close modal on Escape key
+  // Close modal on Escape key or close-all event
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         setEnlargedImage(null);
       }
     }
+    function handleCloseOthers() {
+      setEnlargedImage(null);
+    }
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('close-all-card-lightboxes', handleCloseOthers);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('close-all-card-lightboxes', handleCloseOthers);
+    };
   }, []);
+
+  const openLightbox = (src: string, title: string) => {
+    window.dispatchEvent(new CustomEvent('close-all-card-lightboxes'));
+    setEnlargedImage({ src, title });
+  };
 
   // Autocomplete search handler
   useEffect(() => {
@@ -531,7 +543,7 @@ function SwapEngineContent() {
 
             {/* Card Image Display with Click to Zoom */}
             <div
-              onClick={() => targetCard.image_uri && setEnlargedImage({ src: targetCard.image_uri, title: targetCard.name })}
+              onClick={() => targetCard.image_uri && openLightbox(targetCard.image_uri, targetCard.name)}
               className="relative aspect-[488/680] rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#05070a] group cursor-pointer"
             >
               {targetCard.image_uri ? (
@@ -661,7 +673,7 @@ function SwapEngineContent() {
                       {/* Card Image + Info */}
                       <div className="flex gap-4">
                         <div
-                          onClick={() => alt.image_uri && setEnlargedImage({ src: alt.image_uri, title: alt.name })}
+                          onClick={() => alt.image_uri && openLightbox(alt.image_uri, alt.name)}
                           className="w-24 shrink-0 aspect-[488/680] rounded-xl overflow-hidden border border-white/10 bg-[#05070a] shadow-lg relative cursor-pointer group/img"
                         >
                           {alt.image_uri ? (

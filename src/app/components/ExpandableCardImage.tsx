@@ -24,16 +24,30 @@ export default function ExpandableCardImage({
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    function handleCloseOthers() {
+      setIsOpen(false);
+    }
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         setIsOpen(false);
       }
     }
+
+    window.addEventListener('close-all-card-lightboxes', handleCloseOthers);
     if (isOpen) {
       window.addEventListener('keydown', handleKeyDown);
     }
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('close-all-card-lightboxes', handleCloseOthers);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen]);
+
+  const handleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.dispatchEvent(new CustomEvent('close-all-card-lightboxes'));
+    setIsOpen(true);
+  };
 
   if (!src) {
     return (
@@ -47,7 +61,7 @@ export default function ExpandableCardImage({
   return (
     <>
       <div
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className={`relative group cursor-pointer ${className}`}
         title={`Click to preview ${title}`}
       >
