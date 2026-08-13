@@ -42,6 +42,31 @@ function slugToCardSearchName(slug: string): string {
     .replace(/-/g, ' ');
 }
 
+const TAG_DESCRIPTIONS: Record<string, string> = {
+  'impact-effect': 'deals direct damage to opponents whenever creatures enter the battlefield',
+  'cast-tax': 'forces opponents to pay additional mana when casting spells',
+  'draw-tax': 'punishes opponents or yields benefits whenever they draw cards',
+  'asymmetrical-bounce': 'returns opponents’ nonland permanents to hand without disrupting your board',
+  'burst-draw': 'delivers high-volume card advantage into your hand',
+  'repeatable-pure-draw': 'provides ongoing turn-over-turn card advantage',
+  'pinger': 'delivers repeatable direct damage increments across the table',
+  'group-slug': 'accelerates the game by applying consistent damage pressure to all opponents',
+  'board-wipe': 'clears the board of creatures or nonland permanents',
+  'mana-rock': 'provides repeatable mana ramp from a nonland permanent',
+  'tutor': 'searches your library directly for key combo or answer cards',
+  'counterspell': 'counters target opponent spells directly from the stack',
+  'extra-turn': 'grants an additional turn step to push for a win',
+  'reanimation': 'returns high-impact creatures directly from the graveyard to the battlefield',
+  'aristocrat': 'triggers beneficial drain or card advantage when your creatures die',
+  'treasure': 'produces Treasure tokens for flexible mana ramp and color fixing',
+  'protection': 'shields your permanents or life total from opponent spells and attacks',
+  'anthem': 'provides a static power and toughness boost to your entire board',
+  'haste-enabler': 'grants haste so your creatures can attack immediately',
+  'token-generator': 'creates creature tokens to expand your board presence',
+  'graveyard-hate': 'exiles cards from opponent graveyards to disrupt recursion strategies',
+  'loot': 'lets you draw cards and discard to filter your hand',
+};
+
 // Fetch card and compute budget swaps on server
 async function getArticleData(slug: string) {
   const cleanSearch = slugToCleanName(slug);
@@ -130,38 +155,86 @@ async function getArticleData(slug: string) {
     );
   }
 
-  // Query Candidates (Max price ceiling $5.00 for budget article)
+  // Query Candidates with Hybrid Search (Union of Vector + Shared Tag Pool)
   const maxPrice = 5.00;
   const candidatesRes = await query(
     `WITH target_tags AS (
-      SELECT tag FROM oracle_tags WHERE card_oracle_id = $1
+      SELECT tag FROM oracle_tags 
+      WHERE card_oracle_id = $1 
+        AND tag NOT LIKE '%cycle%' 
+        AND tag NOT LIKE '%set%' 
+        AND tag NOT LIKE '%border%'
     ),
-    candidate_base AS (
+    candidate_pool AS (
+      -- 1. Top vector candidates
+      (
+        SELECT c.oracle_id
+        FROM cards c
+        JOIN card_embeddings ce ON c.oracle_id = ce.oracle_id
+        WHERE c.oracle_id != $1
+          AND c.price_usd IS NOT NULL AND c.price_usd > 0 AND c.price_usd <= $3::numeric
+          AND c.color_identity <@ $4::text[]
+          AND COALESCE(c.is_silver_bordered, FALSE) = FALSE
+          AND c.type_line NOT ILIKE '%Token%'
+          AND c.type_line NOT ILIKE '%Emblem%'
+          AND c.type_line NOT ILIKE '%Art Series%'
+          AND c.type_line NOT ILIKE '%Card Back%'
+          AND c.type_line NOT ILIKE '%Helper%'
+          AND c.type_line NOT ILIKE '%Sticker%'
+          AND c.type_line NOT ILIKE '%Attraction%'
+        ORDER BY ce.embedding <=> $2::vector ASC
+        LIMIT 60
+      )
+      UNION
+      -- 2. Candidates directly sharing functional oracle tags
+      (
+        SELECT c.oracle_id
+        FROM cards c
+        JOIN oracle_tags ot ON c.oracle_id = ot.card_oracle_id
+        WHERE c.oracle_id != $1
+          AND c.price_usd IS NOT NULL AND c.price_usd > 0 AND c.price_usd <= $3::numeric
+          AND c.color_identity <@ $4::text[]
+          AND COALESCE(c.is_silver_bordered, FALSE) = FALSE
+          AND c.type_line NOT ILIKE '%Token%'
+          AND c.type_line NOT ILIKE '%Emblem%'
+          AND c.type_line NOT ILIKE '%Art Series%'
+          AND c.type_line NOT ILIKE '%Card Back%'
+          AND c.type_line NOT ILIKE '%Helper%'
+          AND c.type_line NOT ILIKE '%Sticker%'
+          AND c.type_line NOT ILIKE '%Attraction%'
+          AND ot.tag IN (SELECT tag FROM target_tags)
+        LIMIT 60
+      )
+    ),
+    scored_candidates AS (
       SELECT 
         c.oracle_id, c.name, c.mana_value, c.colors, c.color_identity, c.type_line, c.oracle_text, c.price_usd, c.scryfall_uri, c.image_uri,
-        1 - (ce.embedding <=> $2::vector) AS vector_similarity
+        1 - (ce.embedding <=> $2::vector) AS vector_similarity,
+        ARRAY(
+          SELECT ot.tag FROM oracle_tags ot 
+          WHERE ot.card_oracle_id = c.oracle_id 
+            AND ot.tag IN (SELECT tag FROM target_tags)
+        ) AS shared_tags,
+        (
+          SELECT COUNT(*)::int FROM oracle_tags ot 
+          WHERE ot.card_oracle_id = c.oracle_id 
+            AND ot.tag IN (SELECT tag FROM target_tags)
+        ) AS shared_tag_count
       FROM cards c
       JOIN card_embeddings ce ON c.oracle_id = ce.oracle_id
-      WHERE c.oracle_id != $1
-        AND c.price_usd IS NOT NULL AND c.price_usd > 0 AND c.price_usd <= $3::numeric
-        AND c.color_identity <@ $4::text[]
-        AND COALESCE(c.is_silver_bordered, FALSE) = FALSE
-        AND c.type_line NOT ILIKE '%Token%'
-        AND c.type_line NOT ILIKE '%Emblem%'
-        AND c.type_line NOT ILIKE '%Art Series%'
-        AND c.type_line NOT ILIKE '%Card Back%'
-        AND c.type_line NOT ILIKE '%Helper%'
-        AND c.type_line NOT ILIKE '%Sticker%'
-        AND c.type_line NOT ILIKE '%Attraction%'
-      ORDER BY ce.embedding <=> $2::vector ASC
-      LIMIT 30
+      WHERE c.oracle_id IN (SELECT oracle_id FROM candidate_pool)
     )
-    SELECT cb.*,
-      ARRAY(SELECT ot.tag FROM oracle_tags ot WHERE ot.card_oracle_id = cb.oracle_id AND ot.tag IN (SELECT tag FROM target_tags)) AS shared_tags,
-      (SELECT COUNT(*)::int FROM oracle_tags ot WHERE ot.card_oracle_id = cb.oracle_id AND ot.tag IN (SELECT tag FROM target_tags)) AS shared_tag_count
-    FROM candidate_base cb
+    SELECT *
+    FROM scored_candidates
+    ORDER BY 
+      (
+        (vector_similarity * 0.45) +
+        (LEAST(shared_tag_count, 4) * 0.12) +
+        (CASE WHEN $5::numeric > 0 THEN LEAST(($5::numeric - price_usd) / $5::numeric, 1.0) * 0.05 ELSE 0 END)
+      ) DESC,
+      vector_similarity DESC
     LIMIT 6`,
-    [targetCard.oracle_id, embeddingSql, maxPrice, targetCard.color_identity || []]
+    [targetCard.oracle_id, embeddingSql, maxPrice, targetCard.color_identity || [], targetPrice]
   );
 
   const alternatives = candidatesRes.rows.map((cand: any) => {
@@ -193,9 +266,17 @@ async function getArticleData(slug: string) {
       : `Functions as a ${candType} alternative to ${targetCard.name}'s ${targetType}`;
 
     const sharedTagsClean = (cand.shared_tags || []).map((t: string) => t.replace('otag:', ''));
-    const tagSentence = sharedTagsClean.length > 0
-      ? `Overlaps on core mechanics including #${sharedTagsClean.slice(0, 3).join(', #')}.`
-      : `Fills a similar strategic role in Commander and deck construction.`;
+    
+    // Find the most descriptive shared tag if available
+    const matchedKeyTag = sharedTagsClean.find((t: string) => TAG_DESCRIPTIONS[t]);
+    let tagSentence = '';
+    if (matchedKeyTag && TAG_DESCRIPTIONS[matchedKeyTag]) {
+      tagSentence = `Directly shares the #${matchedKeyTag} mechanic (${TAG_DESCRIPTIONS[matchedKeyTag]}).`;
+    } else if (sharedTagsClean.length > 0) {
+      tagSentence = `Overlaps on functional mechanics including #${sharedTagsClean.slice(0, 3).join(', #')}.`;
+    } else {
+      tagSentence = `Fills a similar strategic role in Commander and deck construction.`;
+    }
 
     const whySimilar = `${typeSentence} and ${cmcComparison}. ${tagSentence}`;
 

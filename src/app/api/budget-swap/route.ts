@@ -150,9 +150,86 @@ export async function GET(request: Request) {
     // 3. Perform Optimized Hybrid SQL Search Query
     const candidatesRes = await query(
       `WITH target_tags AS (
-        SELECT tag FROM oracle_tags WHERE card_oracle_id = $1
+        SELECT tag FROM oracle_tags 
+        WHERE card_oracle_id = $1 
+          AND tag NOT LIKE '%cycle%' 
+          AND tag NOT LIKE '%set%' 
+          AND tag NOT LIKE '%border%'
       ),
-      candidate_base AS (
+      candidate_pool AS (
+        -- 1. Top vector candidates
+        (
+          SELECT c.oracle_id
+          FROM cards c
+          JOIN card_embeddings ce ON c.oracle_id = ce.oracle_id
+          WHERE c.oracle_id != $1
+            AND c.price_usd IS NOT NULL
+            AND c.price_usd > 0
+            AND c.price_usd <= $3::numeric
+            AND c.color_identity <@ $4::text[]
+            AND c.type_line NOT ILIKE '%Token%'
+            AND c.type_line NOT ILIKE '%Emblem%'
+            AND c.type_line NOT ILIKE '%Art Series%'
+            AND c.type_line NOT ILIKE '%Card Back%'
+            AND c.type_line NOT ILIKE '%Helper%'
+            AND (
+              $7::boolean = FALSE OR (
+                COALESCE(c.is_silver_bordered, FALSE) = FALSE
+                AND LOWER(c.oracle_text) NOT LIKE '%silver-bordered%'
+                AND LOWER(c.oracle_text) NOT LIKE '%acorn permanent%'
+                AND c.scryfall_uri NOT LIKE '%/unh/%'
+                AND c.scryfall_uri NOT LIKE '%/ust/%'
+                AND c.scryfall_uri NOT LIKE '%/ugl/%'
+                AND c.scryfall_uri NOT LIKE '%/und/%'
+                AND c.scryfall_uri NOT LIKE '%/unf/%'
+              )
+            )
+            AND (
+              $8::boolean = FALSE OR EXISTS (
+                SELECT 1 FROM unnest($9::text[]) t WHERE c.type_line ILIKE '%' || t || '%'
+              )
+            )
+          ORDER BY ce.embedding <=> $2::vector ASC
+          LIMIT 60
+        )
+        UNION
+        -- 2. Candidates directly sharing functional oracle tags
+        (
+          SELECT c.oracle_id
+          FROM cards c
+          JOIN oracle_tags ot ON c.oracle_id = ot.card_oracle_id
+          WHERE c.oracle_id != $1
+            AND c.price_usd IS NOT NULL
+            AND c.price_usd > 0
+            AND c.price_usd <= $3::numeric
+            AND c.color_identity <@ $4::text[]
+            AND c.type_line NOT ILIKE '%Token%'
+            AND c.type_line NOT ILIKE '%Emblem%'
+            AND c.type_line NOT ILIKE '%Art Series%'
+            AND c.type_line NOT ILIKE '%Card Back%'
+            AND c.type_line NOT ILIKE '%Helper%'
+            AND (
+              $7::boolean = FALSE OR (
+                COALESCE(c.is_silver_bordered, FALSE) = FALSE
+                AND LOWER(c.oracle_text) NOT LIKE '%silver-bordered%'
+                AND LOWER(c.oracle_text) NOT LIKE '%acorn permanent%'
+                AND c.scryfall_uri NOT LIKE '%/unh/%'
+                AND c.scryfall_uri NOT LIKE '%/ust/%'
+                AND c.scryfall_uri NOT LIKE '%/ugl/%'
+                AND c.scryfall_uri NOT LIKE '%/und/%'
+                AND c.scryfall_uri NOT LIKE '%/unf/%'
+              )
+            )
+            AND (
+              $8::boolean = FALSE OR EXISTS (
+                SELECT 1 FROM unnest($9::text[]) t WHERE c.type_line ILIKE '%' || t || '%'
+              )
+            )
+            AND ot.tag IN (SELECT tag FROM target_tags)
+          LIMIT 60
+        )
+      ),
+      scored_candidates AS (
         SELECT 
           c.oracle_id,
           c.name,
@@ -164,52 +241,29 @@ export async function GET(request: Request) {
           c.price_usd,
           c.scryfall_uri,
           c.image_uri,
-          1 - (ce.embedding <=> $2::vector) AS vector_similarity
+          1 - (ce.embedding <=> $2::vector) AS vector_similarity,
+          ARRAY(
+            SELECT ot.tag FROM oracle_tags ot 
+            WHERE ot.card_oracle_id = c.oracle_id 
+              AND ot.tag IN (SELECT tag FROM target_tags)
+          ) AS shared_tags,
+          (
+            SELECT COUNT(*)::int FROM oracle_tags ot 
+            WHERE ot.card_oracle_id = c.oracle_id 
+              AND ot.tag IN (SELECT tag FROM target_tags)
+          ) AS shared_tag_count
         FROM cards c
         JOIN card_embeddings ce ON c.oracle_id = ce.oracle_id
-        WHERE c.oracle_id != $1
-          AND c.price_usd IS NOT NULL
-          AND c.price_usd > 0
-          AND c.price_usd <= $3::numeric
-          AND c.color_identity <@ $4::text[]
-          AND c.type_line NOT ILIKE '%Token%'
-          AND c.type_line NOT ILIKE '%Emblem%'
-          AND c.type_line NOT ILIKE '%Art Series%'
-          AND c.type_line NOT ILIKE '%Card Back%'
-          AND c.type_line NOT ILIKE '%Helper%'
-          AND (
-            $7::boolean = FALSE OR (
-              COALESCE(c.is_silver_bordered, FALSE) = FALSE
-              AND LOWER(c.oracle_text) NOT LIKE '%silver-bordered%'
-              AND LOWER(c.oracle_text) NOT LIKE '%acorn permanent%'
-              AND c.scryfall_uri NOT LIKE '%/unh/%'
-              AND c.scryfall_uri NOT LIKE '%/ust/%'
-              AND c.scryfall_uri NOT LIKE '%/ugl/%'
-              AND c.scryfall_uri NOT LIKE '%/und/%'
-              AND c.scryfall_uri NOT LIKE '%/unf/%'
-            )
-          )
-          AND (
-            $8::boolean = FALSE OR EXISTS (
-              SELECT 1 FROM unnest($9::text[]) t WHERE c.type_line ILIKE '%' || t || '%'
-            )
-          )
-        ORDER BY ce.embedding <=> $2::vector ASC
-        LIMIT 40
+        WHERE c.oracle_id IN (SELECT oracle_id FROM candidate_pool)
       )
-      SELECT 
-        cb.*,
-        ARRAY(
-          SELECT ot.tag FROM oracle_tags ot WHERE ot.card_oracle_id = cb.oracle_id AND ot.tag IN (SELECT tag FROM target_tags)
-        ) AS shared_tags,
-        (
-          SELECT COUNT(*)::int FROM oracle_tags ot WHERE ot.card_oracle_id = cb.oracle_id AND ot.tag IN (SELECT tag FROM target_tags)
-        ) AS shared_tag_count
-      FROM candidate_base cb
+      SELECT *
+      FROM scored_candidates
       ORDER BY 
-        ((vector_similarity * 0.70) + 
-         (LEAST((SELECT COUNT(*)::int FROM oracle_tags ot WHERE ot.card_oracle_id = cb.oracle_id AND ot.tag IN (SELECT tag FROM target_tags)), 5) * 0.05) +
-         (CASE WHEN $5::numeric > 0 THEN LEAST(($5::numeric - cb.price_usd) / $5::numeric, 1.0) * 0.10 ELSE 0 END)) DESC,
+        (
+          (vector_similarity * 0.45) +
+          (LEAST(shared_tag_count, 4) * 0.12) +
+          (CASE WHEN $5::numeric > 0 THEN LEAST(($5::numeric - price_usd) / $5::numeric, 1.0) * 0.05 ELSE 0 END)
+        ) DESC,
         vector_similarity DESC
       LIMIT $6`,
       [
