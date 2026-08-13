@@ -6,7 +6,7 @@ import { InfiniteArticlesGrid } from './InfiniteArticlesGrid';
 
 export const dynamic = 'force-dynamic';
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cheapmtg.com';
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 
 export const metadata: Metadata = {
   title: 'MTG Budget Strategy Articles & Guides | CheapMTG',
@@ -45,6 +45,14 @@ async function getInitialStaplesOver15() {
          AND COALESCE(is_silver_bordered, FALSE) = FALSE`
     );
 
+    const allCardsRes = await query(
+      `SELECT oracle_id, name, price_usd
+       FROM cards
+       WHERE price_usd IS NOT NULL AND price_usd >= 15.00
+         AND COALESCE(is_silver_bordered, FALSE) = FALSE
+       ORDER BY name ASC`
+    );
+
     const total = parseInt(countRes.rows[0]?.total || '0', 10);
     const cards = res.rows.map((row: any) => ({
       oracle_id: row.oracle_id,
@@ -56,15 +64,21 @@ async function getInitialStaplesOver15() {
       slug: cardNameToSlug(row.name),
     }));
 
-    return { cards, hasMore: cards.length < total };
+    const allArticleLinks = allCardsRes.rows.map((row: any) => ({
+      name: row.name,
+      price_usd: parseFloat(row.price_usd),
+      slug: cardNameToSlug(row.name),
+    }));
+
+    return { cards, hasMore: cards.length < total, allArticleLinks };
   } catch (err) {
     console.error('Error fetching staples over $15:', err);
-    return { cards: [], hasMore: false };
+    return { cards: [], hasMore: false, allArticleLinks: [] };
   }
 }
 
 export default async function ArticlesIndexPage() {
-  const { cards: initialCards, hasMore: initialHasMore } = await getInitialStaplesOver15();
+  const { cards: initialCards, hasMore: initialHasMore, allArticleLinks } = await getInitialStaplesOver15();
 
   return (
     <div className="min-h-screen bg-[#05070a] text-[#f0f6fc] relative selection:bg-amber-500/30 selection:text-amber-200">
@@ -104,10 +118,36 @@ export default async function ArticlesIndexPage() {
           <h1 className="font-cinzel text-4xl sm:text-5xl font-black tracking-wide gradient-text-gold">
             Budget Guides
           </h1>
+          <p className="text-xs sm:text-sm text-[#8b949e]">
+            Comprehensive vector-analyzed MTG budget swap guides for high-demand Commander & Modern staples.
+          </p>
         </div>
 
         {/* Articles Grid with Infinite Scroll */}
         <InfiniteArticlesGrid initialCards={initialCards} initialHasMore={initialHasMore} />
+
+        {/* Complete HTML Crawl Mesh Section for Googlebot Indexing */}
+        {allArticleLinks && allArticleLinks.length > 0 && (
+          <section className="pt-12 border-t border-white/10 space-y-6">
+            <div className="space-y-1">
+              <h2 className="font-cinzel text-2xl font-bold text-white">All MTG Card Strategy Guides Index</h2>
+              <p className="text-xs text-[#8b949e]">Direct links to vector-analyzed budget guide articles for all high-value cards in our index.</p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 text-xs">
+              {allArticleLinks.map((item: any) => (
+                <Link
+                  key={item.slug}
+                  href={`/articles/${item.slug}`}
+                  className="px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-amber-500/40 hover:text-amber-300 text-[#c9d1d9] transition-all truncate flex items-center justify-between"
+                  title={`Budget alternatives for ${item.name}`}
+                >
+                  <span className="truncate">{item.name}</span>
+                  <span className="text-[10px] font-mono text-amber-400 ml-1 shrink-0">${item.price_usd.toFixed(0)}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

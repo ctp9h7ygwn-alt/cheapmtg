@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Sparkles, ArrowRight, Clock, Tag, ExternalLink, ShieldCheck, CheckCircle2, TrendingDown, BookOpen } from 'lucide-react';
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cheapmtg.com';
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 const canonicalUrl = `${baseUrl}/articles/budget-options-for-rhystic-study`;
 
 export const metadata: Metadata = {
@@ -255,6 +255,54 @@ export default function RhysticStudyArticlePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Crawlable Backlinks Section: Similar Expensive Cards to Replace */}
+        <section className="space-y-6 pt-6 border-t border-white/10">
+          <h2 className="font-cinzel text-xl font-bold text-white flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-amber-400" /> Similar Expensive Staples to Replace
+          </h2>
+          <p className="text-xs text-[#8b949e]">
+            Looking to budget-proof your Commander deck? Check out our strategy guides for other high-value cards:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <Link
+              href="/articles/budget-options-for-the-one-ring"
+              className="glass-card rounded-2xl p-4 border border-white/10 hover:border-amber-500/50 hover:-translate-y-1 transition-all group space-y-2"
+            >
+              <div className="font-cinzel font-bold text-xs text-white group-hover:text-amber-300 transition-colors">
+                Budget Options for The One Ring
+              </div>
+              <div className="text-[10px] text-[#8b949e] font-mono">$105.88 Market</div>
+              <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1">
+                View Budget Swaps <ArrowRight className="w-3 h-3" />
+              </div>
+            </Link>
+            <Link
+              href="/articles/budget-options-for-cyclonic-rift"
+              className="glass-card rounded-2xl p-4 border border-white/10 hover:border-amber-500/50 hover:-translate-y-1 transition-all group space-y-2"
+            >
+              <div className="font-cinzel font-bold text-xs text-white group-hover:text-amber-300 transition-colors">
+                Budget Options for Cyclonic Rift
+              </div>
+              <div className="text-[10px] text-[#8b949e] font-mono">$38.00 Market</div>
+              <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1">
+                View Budget Swaps <ArrowRight className="w-3 h-3" />
+              </div>
+            </Link>
+            <Link
+              href="/articles/budget-options-for-fierce-guardianship"
+              className="glass-card rounded-2xl p-4 border border-white/10 hover:border-amber-500/50 hover:-translate-y-1 transition-all group space-y-2"
+            >
+              <div className="font-cinzel font-bold text-xs text-white group-hover:text-amber-300 transition-colors">
+                Budget Options for Fierce Guardianship
+              </div>
+              <div className="text-[10px] text-[#8b949e] font-mono">$42.00 Market</div>
+              <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1">
+                View Budget Swaps <ArrowRight className="w-3 h-3" />
+              </div>
+            </Link>
           </div>
         </section>
 

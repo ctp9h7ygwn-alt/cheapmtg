@@ -204,6 +204,41 @@ async function getArticleData(slug: string) {
     };
   });
 
+  // Query Related High-Value Article Cards for Internal Crawl Mesh
+  const relatedRes = await query(
+    `SELECT oracle_id, name, type_line, price_usd, image_uri, color_identity
+     FROM cards
+     WHERE oracle_id != $1
+       AND price_usd IS NOT NULL AND price_usd >= 15.00
+       AND COALESCE(is_silver_bordered, FALSE) = FALSE
+     ORDER BY 
+       CASE WHEN color_identity && $2::text[] THEN 0 ELSE 1 END,
+       price_usd DESC
+     LIMIT 6`,
+    [targetCard.oracle_id, targetCard.color_identity || []]
+  );
+
+  const relatedArticles = relatedRes.rows.map((row: any) => ({
+    oracle_id: row.oracle_id,
+    name: row.name,
+    type_line: row.type_line,
+    price_usd: parseFloat(row.price_usd),
+    image_uri: row.image_uri,
+    color_identity: row.color_identity || [],
+    slug: 'budget-options-for-' + row.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+  }));
+
+  // Functional Role Determination for SEO Content Uniqueness
+  const typeLower = (targetCard.type_line || '').toLowerCase();
+  const textLower = (targetCard.oracle_text || '').toLowerCase();
+  let cardRole = 'Versatile Deck Staple';
+  if (textLower.includes('draw')) cardRole = 'Card Advantage Engine';
+  else if (textLower.includes('destroy all') || textLower.includes('exile all')) cardRole = 'Board Wipe & Reset';
+  else if (textLower.includes('destroy target') || textLower.includes('exile target')) cardRole = 'Single-Target Removal';
+  else if (textLower.includes('search your library')) cardRole = 'Tutor & Consistency Helper';
+  else if (textLower.includes('add {') || textLower.includes('mana')) cardRole = 'Mana Accelerator & Ramp';
+  else if (typeLower.includes('creature')) cardRole = 'High-Impact Creature Body';
+
   return {
     targetCard: {
       oracle_id: targetCard.oracle_id,
@@ -214,8 +249,10 @@ async function getArticleData(slug: string) {
       price_usd: targetPrice,
       image_uri: targetCard.image_uri,
       oracle_tags: targetTags.map((t: string) => t.replace('otag:', '')),
+      cardRole,
     },
     alternatives,
+    relatedArticles,
   };
 }
 
@@ -240,7 +277,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await getArticleData(params.slug);
   if (!data) return { title: 'Article Not Found | CheapMTG' };
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cheapmtg.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
   const name = data.targetCard.name;
   const colorLabel = getColorLabel(data.targetCard.color_identity);
   const topAlternative = data.alternatives[0]?.name || 'budget substitutes';
@@ -277,9 +314,9 @@ export default async function DynamicArticlePage({ params }: Props) {
     notFound();
   }
 
-  const { targetCard, alternatives } = data;
+  const { targetCard, alternatives, relatedArticles } = data;
   const colorLabel = getColorLabel(targetCard.color_identity);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cheapmtg.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
   const canonicalUrl = `${baseUrl}/articles/${params.slug}`;
   const topAlternative = alternatives[0]?.name || 'low-cost substitutes';
 
@@ -417,8 +454,21 @@ export default async function DynamicArticlePage({ params }: Props) {
               <span className="font-mono text-lg font-black text-amber-400">${targetCard.price_usd.toFixed(2)} Market</span>
             </div>
             <p className="text-[#8b949e]">
-              <strong className="text-white">Card Breakdown:</strong> {targetCard.name} ({targetCard.type_line}) is a high-demand MTG card. At ${targetCard.price_usd.toFixed(2)}, budget-conscious players can leverage vector embedding similarity to achieve similar game actions for under $5.00.
+              <strong className="text-white">Card Breakdown:</strong> {targetCard.name} ({targetCard.type_line}) acts as a key <span className="text-amber-300 font-semibold">{targetCard.cardRole}</span> in competitive and casual EDH / Modern formats. At ${targetCard.price_usd.toFixed(2)}, budget-conscious players can leverage vector embedding similarity to achieve comparable game effects for under $5.00.
             </p>
+            {relatedArticles && relatedArticles.length > 0 && (
+              <div className="pt-2 text-[11px] text-[#8b949e]">
+                <strong className="text-white">Looking for other high-cost replacements?</strong> See our budget guides for{' '}
+                {relatedArticles.slice(0, 3).map((rel: any, i: number) => (
+                  <span key={rel.oracle_id}>
+                    {i > 0 && ', '}
+                    <Link href={`/articles/${rel.slug}`} className="text-amber-400 font-semibold hover:underline">
+                      {rel.name} (${rel.price_usd.toFixed(0)})
+                    </Link>
+                  </span>
+                ))}.
+              </div>
+            )}
             {targetCard.oracle_tags && targetCard.oracle_tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {targetCard.oracle_tags.map((t: string) => (
@@ -531,6 +581,48 @@ export default async function DynamicArticlePage({ params }: Props) {
             </div>
           )}
         </section>
+
+        {/* Crawlable Backlinks Section: Similar Expensive Cards to Replace */}
+        {relatedArticles && relatedArticles.length > 0 && (
+          <section className="space-y-6 pt-6 border-t border-white/10">
+            <h2 className="font-cinzel text-xl font-bold text-white flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-amber-400" /> Similar Expensive Staples to Replace
+            </h2>
+            <p className="text-xs text-[#8b949e]">
+              Looking to cut costs across your entire Commander deck? Browse budget guides for similar high-value cards in this format:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {relatedArticles.map((rel: any) => (
+                <Link
+                  key={rel.oracle_id}
+                  href={`/articles/${rel.slug}`}
+                  className="glass-card rounded-2xl p-4 border border-white/10 hover:border-amber-500/50 hover:-translate-y-1 transition-all group flex flex-col justify-between space-y-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-16 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-[#090d16]">
+                      {rel.image_uri ? (
+                        <img src={rel.image_uri} alt={rel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[8px] text-[#8b949e]">Card</div>
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <div className="font-cinzel font-bold text-xs text-white group-hover:text-amber-300 transition-colors line-clamp-1">
+                        Budget Options for {rel.name}
+                      </div>
+                      <div className="text-[10px] text-[#8b949e] font-mono">
+                        ${rel.price_usd.toFixed(2)} Market
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    View Budget Swaps <ArrowRight className="w-3 h-3" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* CTA Launch Engine */}
         <section className="glass-panel rounded-3xl p-8 border border-white/10 text-center space-y-4">

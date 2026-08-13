@@ -9,6 +9,7 @@ function cardNameToSlug(name: string): string {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
+  const stableDate = new Date('2026-08-03');
 
   let articleUrls: MetadataRoute.Sitemap = [];
   try {
@@ -17,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
     articleUrls = res.rows.map((row: any) => ({
       url: `${baseUrl}/articles/${cardNameToSlug(row.name)}`,
-      lastModified: new Date(),
+      lastModified: stableDate,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     }));
@@ -28,13 +29,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: stableDate,
       changeFrequency: 'daily' as const,
       priority: 1.0,
     },
     {
       url: `${baseUrl}/articles`,
-      lastModified: new Date(),
+      lastModified: stableDate,
       changeFrequency: 'daily' as const,
       priority: 0.9,
     },
