@@ -209,7 +209,7 @@ async function getArticleData(slug: string) {
     `SELECT oracle_id, name, type_line, price_usd, image_uri, color_identity
      FROM cards
      WHERE oracle_id != $1
-       AND price_usd IS NOT NULL AND price_usd >= 15.00
+       AND price_usd IS NOT NULL AND price_usd >= 10.00
        AND COALESCE(is_silver_bordered, FALSE) = FALSE
      ORDER BY 
        CASE WHEN color_identity && $2::text[] THEN 0 ELSE 1 END,

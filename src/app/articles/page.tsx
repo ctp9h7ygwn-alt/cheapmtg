@@ -27,12 +27,12 @@ function cardNameToSlug(name: string): string {
   return 'budget-options-for-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
-async function getInitialStaplesOver15() {
+async function getInitialStaplesOver10() {
   try {
     const res = await query(
       `SELECT oracle_id, name, type_line, price_usd, image_uri, color_identity
        FROM cards
-       WHERE price_usd IS NOT NULL AND price_usd >= 15.00
+       WHERE price_usd IS NOT NULL AND price_usd >= 10.00
          AND COALESCE(is_silver_bordered, FALSE) = FALSE
        ORDER BY price_usd DESC
        LIMIT 12`
@@ -41,14 +41,14 @@ async function getInitialStaplesOver15() {
     const countRes = await query(
       `SELECT COUNT(*) as total
        FROM cards
-       WHERE price_usd IS NOT NULL AND price_usd >= 15.00
+       WHERE price_usd IS NOT NULL AND price_usd >= 10.00
          AND COALESCE(is_silver_bordered, FALSE) = FALSE`
     );
 
     const allCardsRes = await query(
       `SELECT oracle_id, name, price_usd
        FROM cards
-       WHERE price_usd IS NOT NULL AND price_usd >= 15.00
+       WHERE price_usd IS NOT NULL AND price_usd >= 10.00
          AND COALESCE(is_silver_bordered, FALSE) = FALSE
        ORDER BY name ASC`
     );
@@ -78,7 +78,7 @@ async function getInitialStaplesOver15() {
 }
 
 export default async function ArticlesIndexPage() {
-  const { cards: initialCards, hasMore: initialHasMore, allArticleLinks } = await getInitialStaplesOver15();
+  const { cards: initialCards, hasMore: initialHasMore, allArticleLinks } = await getInitialStaplesOver10();
 
   return (
     <div className="min-h-screen bg-[#05070a] text-[#f0f6fc] relative selection:bg-amber-500/30 selection:text-amber-200">

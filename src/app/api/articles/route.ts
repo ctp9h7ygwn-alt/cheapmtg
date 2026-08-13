@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const offset = (page - 1) * limit;
 
   try {
-    let whereClause = `WHERE price_usd IS NOT NULL AND price_usd >= 15.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE`;
+    let whereClause = `WHERE price_usd IS NOT NULL AND price_usd >= 10.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE`;
     const params: any[] = [limit, offset];
 
     if (search) {
@@ -32,8 +32,8 @@ export async function GET(request: Request) {
 
     const countParams = search ? [`%${search.toLowerCase()}%`] : [];
     const countWhere = search
-      ? `WHERE price_usd IS NOT NULL AND price_usd >= 15.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE AND (LOWER(name) LIKE $1 OR LOWER(type_line) LIKE $1)`
-      : `WHERE price_usd IS NOT NULL AND price_usd >= 15.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE`;
+      ? `WHERE price_usd IS NOT NULL AND price_usd >= 10.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE AND (LOWER(name) LIKE $1 OR LOWER(type_line) LIKE $1)`
+      : `WHERE price_usd IS NOT NULL AND price_usd >= 10.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE`;
 
     const countRes = await query(
       `SELECT COUNT(*) as total FROM cards ${countWhere}`,

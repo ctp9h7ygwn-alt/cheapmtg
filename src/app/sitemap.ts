@@ -14,7 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let articleUrls: MetadataRoute.Sitemap = [];
   try {
     const res = await query(
-      `SELECT name FROM cards WHERE price_usd IS NOT NULL AND price_usd >= 15.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE ORDER BY price_usd DESC LIMIT 1000`
+      `SELECT name FROM cards WHERE price_usd IS NOT NULL AND price_usd >= 10.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE ORDER BY price_usd DESC LIMIT 1500`
     );
     articleUrls = res.rows.map((row: any) => ({
       url: `${baseUrl}/articles/${cardNameToSlug(row.name)}`,
