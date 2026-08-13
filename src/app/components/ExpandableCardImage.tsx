@@ -66,32 +66,42 @@ export default function ExpandableCardImage({
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 animate-fadeIn"
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6 transition-all duration-300 animate-fadeIn"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-md w-full glass-panel rounded-3xl p-4 border border-white/20 shadow-2xl space-y-3 flex flex-col items-center z-[101]"
+            className="relative max-w-sm sm:max-w-md w-full bg-[#0d1322] rounded-3xl p-5 border border-amber-500/40 shadow-[0_0_60px_rgba(0,0,0,0.95)] space-y-4 flex flex-col items-center z-[101]"
           >
-            <div className="w-full flex justify-between items-center px-2">
-              <h4 className="font-cinzel text-lg font-bold text-white leading-tight">{title}</h4>
+            {/* Modal Header */}
+            <div className="w-full flex justify-between items-center border-b border-white/10 pb-3">
+              <h3 className="font-cinzel text-lg sm:text-xl font-bold text-white leading-tight truncate pr-2">
+                {title}
+              </h3>
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-amber-500/20 hover:text-amber-300 flex items-center justify-center text-white transition-all shrink-0 border border-white/10"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="relative aspect-[488/680] w-full max-h-[75vh] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+
+            {/* Premium Card Scan Display */}
+            <div className="relative aspect-[488/680] w-full max-w-[320px] sm:max-w-[360px] rounded-2xl overflow-hidden shadow-2xl border border-white/15 bg-[#05070a]">
               <Image
                 src={src}
                 alt={title}
                 fill
-                sizes="(max-width: 448px) 100vw, 448px"
+                sizes="(max-width: 400px) 100vw, 360px"
                 className="object-contain bg-[#05070a]"
+                priority
               />
             </div>
-            <p className="text-[11px] text-[#8b949e] font-mono text-center">Click anywhere outside or press Esc to close</p>
+
+            {/* Footer dismissal note */}
+            <p className="text-[11px] text-[#8b949e] font-mono text-center pt-1">
+              Click outside or press <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[10px]">Esc</kbd> to close
+            </p>
           </div>
         </div>
       )}
