@@ -34,6 +34,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
+      url: `${baseUrl}/deck-budgetizer`,
+      lastModified: stableDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/articles`,
       lastModified: stableDate,
       changeFrequency: 'daily' as const,

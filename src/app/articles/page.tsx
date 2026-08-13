@@ -9,9 +9,9 @@ export const dynamic = 'force-dynamic';
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 
 export const metadata: Metadata = {
-  title: 'MTG Budget Strategy Articles & Guides | CheapMTG',
+  title: '1,500+ MTG Budget Swap Guides for Commander & Modern Staples | MTGCheap',
   description:
-    'In-depth Magic: The Gathering deck building guides and vector-analyzed card comparisons for high-cost staples.',
+    'Browse over 1,500 budget swap guides for expensive Magic: The Gathering Commander and Modern staples. Find cheaper replacements for cards like Rhystic Study, The One Ring, and more.',
   alternates: {
     canonical: `${baseUrl}/articles`,
   },

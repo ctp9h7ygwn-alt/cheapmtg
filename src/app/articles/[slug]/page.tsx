@@ -281,10 +281,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const name = data.targetCard.name;
   const colorLabel = getColorLabel(data.targetCard.color_identity);
   const topAlternative = data.alternatives[0]?.name || 'budget substitutes';
+  const topSavings = data.alternatives[0]?.percent_savings || 90;
+  const swapCount = data.alternatives.length;
+  const priceDisplay = data.targetCard.price_usd > 0 ? `$${data.targetCard.price_usd.toFixed(0)}` : '';
 
   return {
-    title: `Best ${colorLabel} budget alternatives to ${name}`,
-    description: `Definitive MTG budget strategy guide for ${name}. Compare vector-analyzed ${colorLabel.toLowerCase()} card substitutes like ${topAlternative} and save up to 99%.`,
+    title: `Top ${swapCount} Budget Alternatives to ${name}${priceDisplay ? ` (${priceDisplay})` : ''} — Save ${topSavings}%+`,
+    description: `Find the best ${colorLabel.toLowerCase()} budget replacements for ${name} in Commander & Modern. Top swap: ${topAlternative}. Save up to ${topSavings}% with functional substitutes under $5.`,
     keywords: [
       `budget ${name}`,
       `${name} alternatives`,
@@ -299,8 +302,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `${baseUrl}/articles/${params.slug}`,
     },
     openGraph: {
-      title: `Best ${colorLabel} budget alternatives to ${name}`,
-      description: `Definitive vector-matched ${colorLabel.toLowerCase()} budget replacements for ${name}.`,
+      title: `Top ${swapCount} Budget Alternatives to ${name}${priceDisplay ? ` (${priceDisplay})` : ''} — Save ${topSavings}%+`,
+      description: `Find the best ${colorLabel.toLowerCase()} budget replacements for ${name} in Commander & Modern. Save up to ${topSavings}%.`,
       url: `${baseUrl}/articles/${params.slug}`,
       images: data.targetCard.image_uri ? [{ url: data.targetCard.image_uri }] : [],
     },
