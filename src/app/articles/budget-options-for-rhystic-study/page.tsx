@@ -38,8 +38,8 @@ const JSON_LD = [
     '@type': 'Article',
     headline: 'Top 5 Budget Alternatives to Rhystic Study in Commander (EDH)',
     description: 'Vector-matched functional budget alternatives to Rhystic Study in Magic: The Gathering.',
-    author: { '@type': 'Organization', name: 'CheapMTG Data Lab' },
-    publisher: { '@type': 'Organization', name: 'CheapMTG' },
+    author: { '@type': 'Organization', name: 'MTGCheap Data Lab' },
+    publisher: { '@type': 'Organization', name: 'MTGCheap' },
     datePublished: '2026-08-03',
     dateModified: new Date().toISOString().split('T')[0],
     mainEntityOfPage: canonicalUrl,
@@ -167,7 +167,7 @@ export default function RhysticStudyArticlePage() {
           </h1>
 
           <div className="flex items-center gap-4 text-xs text-[#8b949e] font-mono border-b border-white/10 pb-6">
-            <span>By CheapMTG Data Lab</span>
+            <span>By MTGCheap Data Lab</span>
             <span>•</span>
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5 text-amber-400" /> 6 min read

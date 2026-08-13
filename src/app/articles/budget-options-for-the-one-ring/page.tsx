@@ -38,8 +38,8 @@ const JSON_LD = [
     '@type': 'Article',
     headline: 'Best Budget Alternatives to The One Ring in MTG Commander & Modern',
     description: 'Vector-matched functional budget alternatives to The One Ring in Magic: The Gathering.',
-    author: { '@type': 'Organization', name: 'CheapMTG Data Lab' },
-    publisher: { '@type': 'Organization', name: 'CheapMTG' },
+    author: { '@type': 'Organization', name: 'MTGCheap Data Lab' },
+    publisher: { '@type': 'Organization', name: 'MTGCheap' },
     datePublished: '2026-08-03',
     dateModified: new Date().toISOString().split('T')[0],
     mainEntityOfPage: canonicalUrl,
@@ -159,7 +159,7 @@ export default function OneRingArticlePage() {
           </h1>
 
           <div className="flex items-center gap-4 text-xs text-[#8b949e] font-mono border-b border-white/10 pb-6">
-            <span>By CheapMTG Data Lab</span>
+            <span>By MTGCheap Data Lab</span>
             <span>•</span>
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5 text-amber-400" /> 7 min read

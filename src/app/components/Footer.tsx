@@ -34,10 +34,10 @@ export default function Footer() {
 
         <div className="border-t border-white/5 pt-6 text-[11px] text-[#8b949e] space-y-2 leading-relaxed">
           <p>
-            CheapMTG is unofficial Fan Content permitted under the Wizards of the Coast Fan Content Policy. Portions of the materials used are property of Wizards of the Coast. © Wizards of the Coast LLC. Magic: The Gathering is a registered trademark of Wizards of the Coast. Card imagery provided by Scryfall.
+            MTGCheap is unofficial Fan Content permitted under the Wizards of the Coast Fan Content Policy. Portions of the materials used are property of Wizards of the Coast. © Wizards of the Coast LLC. Magic: The Gathering is a registered trademark of Wizards of the Coast. Card imagery provided by Scryfall.
           </p>
           <p className="text-[#6e7681]">
-            © 2026 CheapMTG. All rights reserved.
+            © 2026 MTGCheap. All rights reserved.
           </p>
         </div>
       </div>
