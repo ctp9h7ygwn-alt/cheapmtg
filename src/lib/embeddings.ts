@@ -1,3 +1,6 @@
+import os from 'os';
+import path from 'path';
+
 let extractorPipeline: any = null;
 
 export async function getEmbeddingPipeline() {
@@ -5,6 +8,7 @@ export async function getEmbeddingPipeline() {
     console.log('Loading embedding model (Xenova/all-MiniLM-L6-v2)...');
     const { pipeline, env } = await import('@xenova/transformers');
     env.allowLocalModels = false;
+    env.cacheDir = path.join(os.tmpdir(), '.cache');
     extractorPipeline = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
     console.log('Embedding model loaded successfully.');
   }
