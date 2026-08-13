@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Sparkles, ArrowRight, Clock, Tag, ExternalLink, ShieldCheck, CheckCircle2, TrendingDown, BookOpen, Zap } from 'lucide-react';
+import { Sparkles, ArrowRight, Clock, Tag, ExternalLink, ShieldCheck, CheckCircle2, TrendingDown, BookOpen, Zap, ShieldAlert } from 'lucide-react';
 import Footer from '../../components/Footer';
 import ExpandableCardImage from '../../components/ExpandableCardImage';
 
@@ -99,7 +99,8 @@ const SWAPS = [
     type: 'Artifact (6 CMC)',
     text: '{3}, {T}: Draw three cards. This ability costs {1} more to activate for each card in your hand.',
     match: '69% Vector Match',
-    synergy: "Matches The One Ring's colorless Artifact card type. Provides repeatable tap-activated burst card draw for Commander without requiring color mana.",
+    whySimilar: "Matches The One Ring's colorless Artifact card type. Provides repeatable tap-activated burst card draw for Commander without requiring color mana.",
+    whyNotPerfect: "Costs 2 additional mana to cast (6 CMC vs 4 CMC) and activation cost scales with hand size.",
     sharedTags: ['#burst-draw', '#hand-positive', '#repeatable-pure-draw', '#tome', '#activated-ability'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Loreseeker\'s%20Stone&utm_source=cheapmtg',
     manaPoolUrl: 'https://manapool.com/cards?q=Loreseeker\'s%20Stone&ref=cheapmtg',
@@ -110,10 +111,23 @@ const SWAPS = [
     type: 'Artifact (3 CMC)',
     text: '{T}, Pay 1 life: Destroy target permanent you own.\n{T}, Pay 2 life: Add one mana of any color.\n{T}, Pay 3 life: Proliferate.\n{T}, Pay 4 life: Draw a card.',
     match: '75% Vector Match',
-    synergy: "Matches The One Ring's Artifact card type, but costs 1 less mana to cast (3 MV vs 4 MV). Exchanges life total for repeatable card draw and mana ramp.",
+    whySimilar: "Matches The One Ring's Artifact card type, but costs 1 less mana to cast (3 CMC vs 4 CMC). Provides tap-activated card draw and mana ramp.",
+    whyNotPerfect: "Requires paying 4 life per card drawn and lacks The One Ring's protection upon entering.",
     sharedTags: ['#life-for-cards', '#repeatable-pure-draw', '#tome', '#activated-ability'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Staff%20of%20Compleation&utm_source=cheapmtg',
     manaPoolUrl: 'https://manapool.com/cards?q=Staff%20of%20Compleation&ref=cheapmtg',
+  },
+  {
+    name: 'Tome of Legends',
+    price: '$0.45',
+    type: 'Artifact (2 CMC)',
+    text: '{1}, {T}, Remove a page counter from Tome of Legends: Draw a card. Whenever your commander enters or attacks, put a page counter on Tome of Legends.',
+    match: '72% Vector Match',
+    whySimilar: "Cheap 2 CMC colorless Artifact that delivers 1-mana tap card draw tailored for Commander decks.",
+    whyNotPerfect: "Requires your Commander entering the battlefield or attacking to generate page counters.",
+    sharedTags: ['#commander-synergy', '#repeatable-pure-draw', '#tome'],
+    tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Tome%20of%20Legends&utm_source=cheapmtg',
+    manaPoolUrl: 'https://manapool.com/cards?q=Tome%20of%20Legends&ref=cheapmtg',
   },
 ];
 
@@ -225,12 +239,21 @@ export default function OneRingArticlePage() {
                   {swap.text}
                 </p>
 
-                <div className="bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-xl space-y-1">
-                  <div className="text-[11px] font-bold text-amber-300 font-mono flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-amber-400" /> Vector Synergy Breakdown
+                <div className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl space-y-1">
+                  <div className="text-[11px] font-bold text-emerald-300 font-mono flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Why It&apos;s Similar
                   </div>
                   <p className="text-xs text-[#c9d1d9] leading-relaxed">
-                    {swap.synergy}
+                    {swap.whySimilar}
+                  </p>
+                </div>
+
+                <div className="bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-xl space-y-1">
+                  <div className="text-[11px] font-bold text-amber-300 font-mono flex items-center gap-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5 text-amber-400" /> Why It Isn&apos;t A Perfect Replacement (Trade-offs)
+                  </div>
+                  <p className="text-xs text-[#c9d1d9] leading-relaxed">
+                    {swap.whyNotPerfect}
                   </p>
                 </div>
 

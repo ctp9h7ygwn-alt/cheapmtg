@@ -17,7 +17,8 @@ import {
   BookOpen,
   Filter,
   Maximize2,
-  Zap
+  Zap,
+  ShieldAlert
 } from 'lucide-react';
 
 export const revalidate = 3600;
@@ -159,7 +160,7 @@ async function getArticleData(slug: string) {
       ARRAY(SELECT ot.tag FROM oracle_tags ot WHERE ot.card_oracle_id = cb.oracle_id AND ot.tag IN (SELECT tag FROM target_tags)) AS shared_tags,
       (SELECT COUNT(*)::int FROM oracle_tags ot WHERE ot.card_oracle_id = cb.oracle_id AND ot.tag IN (SELECT tag FROM target_tags)) AS shared_tag_count
     FROM candidate_base cb
-    LIMIT 4`,
+    LIMIT 6`,
     [targetCard.oracle_id, embeddingSql, maxPrice, targetCard.color_identity || []]
   );
 
@@ -193,10 +194,39 @@ async function getArticleData(slug: string) {
 
     const sharedTagsClean = (cand.shared_tags || []).map((t: string) => t.replace('otag:', ''));
     const tagSentence = sharedTagsClean.length > 0
-      ? `Overlaps on functional mechanics including #${sharedTagsClean.slice(0, 3).join(', #')}.`
+      ? `Overlaps on core mechanics including #${sharedTagsClean.slice(0, 3).join(', #')}.`
       : `Fills a similar strategic role in Commander and deck construction.`;
 
-    const synergyInsight = `${typeSentence} and ${cmcComparison}. ${tagSentence}`;
+    const whySimilar = `${typeSentence} and ${cmcComparison}. ${tagSentence}`;
+
+    // Deterministic Trade-off & Nuance Analysis
+    const tradeOffs: string[] = [];
+    const candTextLower = (cand.oracle_text || '').toLowerCase();
+    const targetTextLower = (targetCard.oracle_text || '').toLowerCase();
+
+    if (candCmc > targetCmc) {
+      tradeOffs.push(`Costs ${candCmc - targetCmc} additional mana (${candCmc} MV vs ${targetCmc} MV), making it slightly slower on curve.`);
+    }
+
+    if ((candTextLower.includes('each player') || candTextLower.includes('all players') || candTextLower.includes('any player')) &&
+        (!targetTextLower.includes('each player') && !targetTextLower.includes('all players'))) {
+      tradeOffs.push(`Symmetrical effect: benefits all players at the table rather than uniquely favoring you.`);
+    }
+
+    if ((candTextLower.includes('{t}') || candTextLower.includes('pay') || candTextLower.includes('{1}') || candTextLower.includes('{2}')) &&
+        (!targetTextLower.includes('{t}') && !targetTextLower.includes('pay'))) {
+      tradeOffs.push(`Requires manual mana or tap investment to activate, whereas ${targetCard.name} functions passively.`);
+    }
+
+    if (candTextLower.includes('creature') && !targetTextLower.includes('creature')) {
+      tradeOffs.push(`Narrower trigger condition: specifically targets or triggers off creature spells/permanents.`);
+    }
+
+    if (tradeOffs.length === 0) {
+      tradeOffs.push(`At $${price.toFixed(2)} (${percentSavings}% less than ${targetCard.name}), it delivers ${similarityScore}% of the mechanical function, but lacks the absolute power ceiling of the original staple.`);
+    }
+
+    const whyNotPerfect = tradeOffs.join(' ');
 
     return {
       oracle_id: cand.oracle_id,
@@ -208,7 +238,8 @@ async function getArticleData(slug: string) {
       image_uri: cand.image_uri,
       similarity_score: similarityScore,
       shared_tags: sharedTagsClean,
-      synergy_insight: synergyInsight,
+      why_similar: whySimilar,
+      why_not_perfect: whyNotPerfect,
       dollar_savings: parseFloat(dollarSavings.toFixed(2)),
       percent_savings: percentSavings,
       tcgplayer_url: `https://www.tcgplayer.com/search/magic/product?q=${encodeURIComponent(cand.name)}&utm_source=cheapmtg`,
@@ -550,13 +581,23 @@ export default async function DynamicArticlePage({ params }: Props) {
                         {swap.oracle_text}
                       </p>
 
-                      {/* Tailored Synergy Analysis */}
-                      <div className="bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-xl space-y-1">
-                        <div className="text-[11px] font-bold text-amber-300 font-mono flex items-center gap-1.5">
-                          <Zap className="w-3.5 h-3.5 text-amber-400" /> Vector Synergy Breakdown
+                      {/* Proprietary Analytical Insights: Why Similar */}
+                      <div className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl space-y-1">
+                        <div className="text-[11px] font-bold text-emerald-300 font-mono flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Why It&apos;s Similar
                         </div>
                         <p className="text-xs text-[#c9d1d9] leading-relaxed">
-                          {swap.synergy_insight}
+                          {swap.why_similar}
+                        </p>
+                      </div>
+
+                      {/* Proprietary Analytical Insights: Why Not Perfect */}
+                      <div className="bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-xl space-y-1">
+                        <div className="text-[11px] font-bold text-amber-300 font-mono flex items-center gap-1.5">
+                          <ShieldAlert className="w-3.5 h-3.5 text-amber-400" /> Why It Isn&apos;t A Perfect Replacement (Trade-offs)
+                        </div>
+                        <p className="text-xs text-[#c9d1d9] leading-relaxed">
+                          {swap.why_not_perfect}
                         </p>
                       </div>
 

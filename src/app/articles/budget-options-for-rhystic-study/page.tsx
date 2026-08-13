@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Sparkles, ArrowRight, Clock, Tag, ExternalLink, ShieldCheck, CheckCircle2, TrendingDown, BookOpen } from 'lucide-react';
+import { Sparkles, ArrowRight, Clock, Tag, ExternalLink, ShieldCheck, CheckCircle2, TrendingDown, BookOpen, ShieldAlert } from 'lucide-react';
 import Footer from '../../components/Footer';
 import ExpandableCardImage from '../../components/ExpandableCardImage';
 
@@ -99,6 +99,8 @@ const SWAPS = [
     type: 'Enchantment (2 CMC)',
     text: 'Whenever a player casts a spell, that player may pay {2}. If the player does, they draw a card.',
     match: '95% Vector Match',
+    whySimilar: "Matches Rhystic Study's Blue Enchantment spell-taxation and card-draw mechanic, but costs 1 less mana to cast (2 CMC vs 3 CMC).",
+    whyNotPerfect: "Symmetrical effect: allows opponents to draw cards when they pay {2}, whereas Rhystic Study only rewards you.",
     sharedTags: ['#cast-tax', '#repeatable-pure-draw'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Unifying%20Theory&utm_source=cheapmtg',
     manaPoolUrl: 'https://manapool.com/cards?q=Unifying%20Theory&ref=cheapmtg',
@@ -109,6 +111,8 @@ const SWAPS = [
     type: 'Enchantment (3 CMC)',
     text: 'Whenever an opponent casts a creature spell, this enchantment deals 2 damage to that player unless they pay {2}.',
     match: '84% Vector Match',
+    whySimilar: "Shares Rhystic Study's 3 CMC Blue Enchantment cast-taxation mechanic ({2} tax per opponent cast).",
+    whyNotPerfect: "Deals 2 damage to opponents instead of drawing you a card, and triggers only on creature spells.",
     sharedTags: ['#cast-tax', '#cast-trigger-other', '#rhystic'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Soul%20Barrier&utm_source=cheapmtg',
     manaPoolUrl: 'https://manapool.com/cards?q=Soul%20Barrier&ref=cheapmtg',
@@ -119,6 +123,8 @@ const SWAPS = [
     type: 'Enchantment (4 CMC)',
     text: '{2}: Draw a card if you have no cards in hand.',
     match: '87% Vector Match',
+    whySimilar: "Blue Enchantment delivering repeatable card draw in budget Commander decks.",
+    whyNotPerfect: "Requires 4 CMC to cast plus {2} mana activation investment, and requires an empty hand.",
     sharedTags: ['#repeatable-pure-draw'],
     tcgUrl: 'https://www.tcgplayer.com/search/magic/product?q=Idle%20Thoughts&utm_source=cheapmtg',
     manaPoolUrl: 'https://manapool.com/cards?q=Idle%20Thoughts&ref=cheapmtg',
@@ -239,6 +245,24 @@ export default function RhysticStudyArticlePage() {
                 <p className="bg-[#05070a]/80 p-3.5 rounded-xl border border-white/10 italic text-xs leading-relaxed text-[#f0f6fc]">
                   {swap.text}
                 </p>
+
+                <div className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl space-y-1">
+                  <div className="text-[11px] font-bold text-emerald-300 font-mono flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Why It&apos;s Similar
+                  </div>
+                  <p className="text-xs text-[#c9d1d9] leading-relaxed">
+                    {swap.whySimilar}
+                  </p>
+                </div>
+
+                <div className="bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-xl space-y-1">
+                  <div className="text-[11px] font-bold text-amber-300 font-mono flex items-center gap-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5 text-amber-400" /> Why It Isn&apos;t A Perfect Replacement (Trade-offs)
+                  </div>
+                  <p className="text-xs text-[#c9d1d9] leading-relaxed">
+                    {swap.whyNotPerfect}
+                  </p>
+                </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-1">
                   <div className="flex flex-wrap gap-1.5">
