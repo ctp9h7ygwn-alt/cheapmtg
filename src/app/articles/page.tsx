@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { query } from '@/lib/db';
 import { Sparkles } from 'lucide-react';
 import { InfiniteArticlesGrid } from './InfiniteArticlesGrid';
+import Footer from '../components/Footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,8 +17,8 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/articles`,
   },
   openGraph: {
-    title: 'MTG Budget Strategy Articles & Guides | CheapMTG',
-    description: 'Discover contextually accurate budget swaps for top Commander and Modern staples.',
+    title: '1,500+ MTG Budget Swap Guides for Commander & Modern Staples | MTGCheap',
+    description: 'Browse over 1,500 budget swap guides for expensive Magic: The Gathering Commander and Modern staples.',
     url: `${baseUrl}/articles`,
     type: 'website',
   },
@@ -149,6 +150,8 @@ export default async function ArticlesIndexPage() {
           </section>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 }

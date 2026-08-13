@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Footer from '../components/Footer';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 
@@ -38,5 +39,10 @@ export default function DeckBudgetizerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <Footer />
+    </>
+  );
 }

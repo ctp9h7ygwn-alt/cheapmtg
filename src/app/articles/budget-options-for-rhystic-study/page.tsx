@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Sparkles, ArrowRight, Clock, Tag, ExternalLink, ShieldCheck, CheckCircle2, TrendingDown, BookOpen } from 'lucide-react';
+import Footer from '../../components/Footer';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 const canonicalUrl = `${baseUrl}/articles/budget-options-for-rhystic-study`;
@@ -38,6 +40,7 @@ const JSON_LD = [
     author: { '@type': 'Organization', name: 'CheapMTG Data Lab' },
     publisher: { '@type': 'Organization', name: 'CheapMTG' },
     datePublished: '2026-08-03',
+    dateModified: new Date().toISOString().split('T')[0],
     mainEntityOfPage: canonicalUrl,
   },
   {
@@ -175,11 +178,13 @@ export default function RhysticStudyArticlePage() {
 
         {/* Target Card Highlight */}
         <div className="glass-panel rounded-3xl p-6 border border-white/10 flex flex-col md:flex-row gap-6 items-center">
-          <div className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16]">
-            <img
+          <div className="w-40 shrink-0 aspect-[488/680] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#090d16] relative">
+            <Image
               src="https://cards.scryfall.io/normal/front/9/f/9f37c5b6-a59c-45cd-9a99-e9357fe9ea1b.jpg?1783919146"
-              alt="Rhystic Study"
-              className="w-full h-full object-cover"
+              alt="Rhystic Study Magic: The Gathering card"
+              fill
+              sizes="160px"
+              className="object-cover"
             />
           </div>
 
@@ -245,10 +250,10 @@ export default function RhysticStudyArticlePage() {
                     ))}
                   </div>
                   <div className="flex gap-2">
-                    <a href={swap.tcgUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 bg-amber-500 text-black font-extrabold text-xs rounded-lg hover:bg-amber-400 transition-colors flex items-center gap-1">
+                    <a href={swap.tcgUrl} target="_blank" rel="noopener noreferrer nofollow sponsored" className="px-3 py-1.5 bg-amber-500 text-black font-extrabold text-xs rounded-lg hover:bg-amber-400 transition-colors flex items-center gap-1">
                       Buy TCGplayer <ExternalLink className="w-3 h-3" />
                     </a>
-                    <a href={swap.manaPoolUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 bg-white/5 text-white font-semibold text-xs rounded-lg border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-1">
+                    <a href={swap.manaPoolUrl} target="_blank" rel="noopener noreferrer nofollow sponsored" className="px-3 py-1.5 bg-white/5 text-white font-semibold text-xs rounded-lg border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-1">
                       Mana Pool <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
@@ -320,6 +325,8 @@ export default function RhysticStudyArticlePage() {
           </Link>
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

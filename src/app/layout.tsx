@@ -124,6 +124,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${outfit.variable} ${cinzel.variable}`}>
       <head>
+        <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
         <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
         <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />

@@ -360,7 +360,7 @@ export default function DeckBudgetizerPage() {
                         <a
                           href={swap.swap_card.tcgplayer_url}
                           target="_blank"
-                          rel="noopener noreferrer"
+                          rel="noopener noreferrer nofollow sponsored"
                           className="px-3 py-2 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 text-xs font-bold rounded-xl border border-amber-500/40 shrink-0 flex items-center gap-1"
                         >
                           Buy <ExternalLink className="w-3 h-3" />
