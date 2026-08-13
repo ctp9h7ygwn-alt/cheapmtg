@@ -14,7 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let articleUrls: MetadataRoute.Sitemap = [];
   try {
     const res = await query(
-      `SELECT name FROM cards WHERE price_usd IS NOT NULL AND price_usd >= 10.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE ORDER BY price_usd DESC LIMIT 1500`
+      `SELECT name FROM cards WHERE price_usd IS NOT NULL AND price_usd >= 10.00 AND COALESCE(is_silver_bordered, FALSE) = FALSE ORDER BY price_usd DESC LIMIT 45000`
     );
     articleUrls = res.rows.map((row: any) => ({
       url: `${baseUrl}/articles/${cardNameToSlug(row.name)}`,
@@ -25,6 +25,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch (e) {
     console.error('Sitemap DB query error:', e);
   }
+
+  const staticArticles: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}/articles/budget-options-for-rhystic-study`,
+      lastModified: stableDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/articles/budget-options-for-the-one-ring`,
+      lastModified: stableDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
+  ];
 
   return [
     {
@@ -45,6 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily' as const,
       priority: 0.9,
     },
+    ...staticArticles,
     ...articleUrls,
   ];
 }
