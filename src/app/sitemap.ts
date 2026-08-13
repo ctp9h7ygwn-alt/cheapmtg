@@ -4,7 +4,7 @@ import { query } from '@/lib/db';
 export const revalidate = 86400;
 
 function cardNameToSlug(name: string): string {
-  return 'budget-options-for-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  return 'budget-options-for-' + name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -29,6 +29,8 @@ interface Props {
 function slugToCleanName(slug: string): string {
   return slug
     .replace(/^budget-options-for-/, '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]/gi, '')
     .toLowerCase();
 }
@@ -49,10 +51,10 @@ async function getArticleData(slug: string) {
     `SELECT c.*, ce.embedding::text AS embedding_str
      FROM cards c
      LEFT JOIN card_embeddings ce ON c.oracle_id = ce.oracle_id
-     WHERE REGEXP_REPLACE(LOWER(c.name), '[^a-z0-9]', '', 'g') = $1
+     WHERE REGEXP_REPLACE(TRANSLATE(LOWER(c.name), 'âàáäãåêèéëîìíïôòóöõûùúüñÿ', 'aaaaaaeeeeiiiiooooouuuuny'), '[^a-z0-9]', '', 'g') = $1
         OR LOWER(c.name) LIKE LOWER($2) || '%'
      ORDER BY 
-       CASE WHEN REGEXP_REPLACE(LOWER(c.name), '[^a-z0-9]', '', 'g') = $1 THEN 0 ELSE 1 END,
+       CASE WHEN REGEXP_REPLACE(TRANSLATE(LOWER(c.name), 'âàáäãåêèéëîìíïôòóöõûùúüñÿ', 'aaaaaaeeeeiiiiooooouuuuny'), '[^a-z0-9]', '', 'g') = $1 THEN 0 ELSE 1 END,
        c.price_usd DESC NULLS LAST
      LIMIT 1`,
     [cleanSearch, cardSearch]

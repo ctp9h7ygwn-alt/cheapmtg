@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 function cardNameToSlug(name: string): string {
-  return 'budget-options-for-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  return 'budget-options-for-' + name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
 async function getInitialStaplesOver10() {
