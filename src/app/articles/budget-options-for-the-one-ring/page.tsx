@@ -9,23 +9,29 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 const canonicalUrl = `${baseUrl}/articles/budget-options-for-the-one-ring`;
 
 export const metadata: Metadata = {
-  title: 'Best Budget Alternatives to The One Ring in MTG Commander & Modern',
+  title: 'Top 3 Budget Cards Like The One Ring & Replacements ($90+) | MTGCheap',
   description:
-    'Need a cheap replacement for The One Ring in Magic: The Gathering? Discover vector-analyzed budget alternatives like Loreseeker’s Stone and Staff of Compleation for under $5.',
+    'Looking for cards like The One Ring ($90+) on a budget? Explore top-ranked colorless artifact replacements, functional substitutes, and cheaper card draw options for Commander & Modern.',
   keywords: [
+    'cards like the one ring',
+    'cards like the one ring mtg',
+    'the one ring replacement',
+    'replacement for the one ring',
     'budget the one ring',
     'the one ring alternatives',
+    'the one ring budget alternative',
+    'cheap the one ring mtg',
+    'the one ring substitute edh',
     'cheap card draw artifacts edh',
     'loreseekers stone mtg',
     'staff of compleation mtg',
-    'mtg budget substitutes',
   ],
   alternates: {
     canonical: canonicalUrl,
   },
   openGraph: {
-    title: 'Best Budget Alternatives to The One Ring in MTG Commander',
-    description: 'Save over $100 with vector-matched functional replacements for The One Ring.',
+    title: 'Top 3 Budget Cards Like The One Ring & Replacements ($90+)',
+    description: 'Looking for cards like The One Ring on a budget? Save over $90 with vector-matched functional replacements for Commander.',
     type: 'article',
     url: canonicalUrl,
     images: [{ url: 'https://cards.scryfall.io/normal/front/d/5/d5806e68-1054-458e-866d-1f2470f682b2.jpg?1783916239' }],
@@ -36,8 +42,8 @@ const JSON_LD = [
   {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Best Budget Alternatives to The One Ring in MTG Commander & Modern',
-    description: 'Vector-matched functional budget alternatives to The One Ring in Magic: The Gathering.',
+    headline: 'Top 3 Budget Cards Like The One Ring & Replacements',
+    description: 'Vector-matched functional budget alternatives and cards like The One Ring in Magic: The Gathering.',
     author: { '@type': 'Organization', name: 'MTGCheap Data Lab' },
     publisher: { '@type': 'Organization', name: 'MTGCheap' },
     datePublished: '2026-08-03',
@@ -74,10 +80,18 @@ const JSON_LD = [
     mainEntity: [
       {
         '@type': 'Question',
-        name: 'What is the best budget alternative to The One Ring in Commander?',
+        name: 'What are the best cards like The One Ring in MTG?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Loreseeker’s Stone ($0.28) and Staff of Compleation ($4.26) are top vector-matched budget replacements for The One Ring under $5.',
+          text: 'Loreseeker’s Stone ($0.28), Tome of Legends ($0.45), and Staff of Compleation ($4.26) are the top-ranked budget cards like The One Ring, providing reliable colorless card draw engines under $5.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What is the cheapest replacement for The One Ring?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Loreseeker’s Stone ($0.28) is the cheapest functional substitute, drawing three cards on tap and saving over 99% compared to The One Ring.',
         },
       },
       {
@@ -85,7 +99,7 @@ const JSON_LD = [
         name: 'Why is The One Ring so expensive in MTG?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'The One Ring costs over $100 due to non-land protection and escalating turn-by-turn card draw across Modern and Commander formats.',
+          text: 'The One Ring commands a price of $90–$100+ due to its enters-the-battlefield protection and accelerating turn-over-turn card advantage across Modern and Commander.',
         },
       },
     ],
@@ -169,8 +183,14 @@ export default function OneRingArticlePage() {
           </div>
 
           <h1 className="font-cinzel text-3xl sm:text-4xl font-black text-white leading-tight gradient-text-gold">
-            Best Budget Alternatives to The One Ring in MTG
+            Best Cards Like The One Ring (Budget Alternatives & Replacements)
           </h1>
+
+          <p className="text-sm text-[#8b949e] leading-relaxed">
+            Looking for a budget replacement for <strong className="text-white">The One Ring</strong> ($95.00+)? 
+            Whether you&apos;re brewing a Commander deck or testing alternatives, these vector-ranked substitutes deliver 
+            repeatable card draw without spending $100.
+          </p>
 
           <div className="flex items-center gap-4 text-xs text-[#8b949e] font-mono border-b border-white/10 pb-6">
             <span>By MTGCheap Data Lab</span>

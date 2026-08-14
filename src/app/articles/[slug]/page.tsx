@@ -399,7 +399,7 @@ function getPriceCap(priceUsd: number): number {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await getArticleData(params.slug);
-  if (!data) return { title: 'Article Not Found | CheapMTG' };
+  if (!data) return { title: 'Article Not Found | MTGCheap' };
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
   const name = data.targetCard.name;
@@ -407,27 +407,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const topAlternative = data.alternatives[0]?.name || 'budget substitutes';
   const topSavings = data.alternatives[0]?.percent_savings || 90;
   const swapCount = data.alternatives.length;
-  const priceDisplay = data.targetCard.price_usd > 0 ? `$${data.targetCard.price_usd.toFixed(0)}` : '';
+  const priceDisplay = data.targetCard.price_usd > 0 ? `$${data.targetCard.price_usd.toFixed(2)}` : '';
 
   return {
-    title: `Top ${swapCount} Budget Alternatives to ${name}${priceDisplay ? ` (${priceDisplay})` : ''} — Save ${topSavings}%+`,
-    description: `Find the best ${colorLabel.toLowerCase()} budget replacements for ${name} in Commander & Modern. Top swap: ${topAlternative}. Save up to ${topSavings}% with functional substitutes under $5.`,
+    title: `Top ${swapCount} Budget Cards Like ${name} & Replacements (${priceDisplay}) | MTGCheap`,
+    description: `Looking for cards like ${name} (${priceDisplay}) on a budget? Explore top-ranked ${colorLabel.toLowerCase()} replacements, cheaper substitutes, and budget alternatives for Commander & Modern.`,
     keywords: [
+      `cards like ${name}`,
+      `cards like ${name} mtg`,
+      `${name} replacement`,
+      `replacement for ${name}`,
       `budget ${name}`,
       `${name} alternatives`,
-      `cheap ${name} replacement`,
-      `best ${colorLabel.toLowerCase()} budget cards edh`,
-      `mtg commander budget swaps`,
-      `${name} substitute mtg`,
+      `${name} budget alternative`,
+      `cheap ${name} mtg`,
+      `${name} substitutes edh`,
       `${topAlternative} vs ${name}`,
-      `cheap ${data.targetCard.type_line} edh`,
+      `best ${colorLabel.toLowerCase()} budget cards edh`,
     ],
     alternates: {
       canonical: `${baseUrl}/articles/${params.slug}`,
     },
     openGraph: {
-      title: `Top ${swapCount} Budget Alternatives to ${name}${priceDisplay ? ` (${priceDisplay})` : ''} — Save ${topSavings}%+`,
-      description: `Find the best ${colorLabel.toLowerCase()} budget replacements for ${name} in Commander & Modern. Save up to ${topSavings}%.`,
+      title: `Top ${swapCount} Budget Cards Like ${name} & Replacements (${priceDisplay})`,
+      description: `Looking for cards like ${name} (${priceDisplay}) on a budget? Explore top-ranked ${colorLabel.toLowerCase()} functional replacements and budget alternatives for Commander.`,
       url: `${baseUrl}/articles/${params.slug}`,
       images: data.targetCard.image_uri ? [{ url: data.targetCard.image_uri }] : [],
     },
@@ -447,12 +450,38 @@ export default async function DynamicArticlePage({ params }: Props) {
   const canonicalUrl = `${baseUrl}/articles/${params.slug}`;
   const topAlternative = alternatives[0]?.name || 'low-cost substitutes';
 
+  const sortedByPrice = [...alternatives].sort((a, b) => a.price_usd - b.price_usd);
+  const cheapestAlt = sortedByPrice[0] || alternatives[0];
+
+  const faqs = [
+    {
+      question: `What are the best cards like ${targetCard.name} in MTG?`,
+      answer: alternatives.length > 0
+        ? `The best budget cards like ${targetCard.name} are ${alternatives.slice(0, 3).map((a: any) => `${a.name} ($${a.price_usd.toFixed(2)})`).join(', ')}. These cards provide similar ${targetCard.cardRole.toLowerCase()} mechanics and functional vector match scores up to ${alternatives[0]?.similarity_score}%.`
+        : `Functional budget replacements for ${targetCard.name} are available for under $5.00 on MTGCheap.`,
+    },
+    {
+      question: `What is the cheapest replacement for ${targetCard.name} in Commander?`,
+      answer: cheapestAlt
+        ? `${cheapestAlt.name} ($${cheapestAlt.price_usd.toFixed(2)}) is the most affordable functional replacement for ${targetCard.name} ($${targetCard.price_usd.toFixed(2)}), saving $${cheapestAlt.dollar_savings.toFixed(2)} (${cheapestAlt.percent_savings}% savings) with a ${cheapestAlt.similarity_score}% vector match.`
+        : `Affordable replacements are available for under $1.00.`,
+    },
+    {
+      question: `Why do players look for budget alternatives to ${targetCard.name}?`,
+      answer: `Commanding a market price of $${targetCard.price_usd.toFixed(2)}, ${targetCard.name} is a significant financial investment. Using vector-ranked substitutes lets players build competitive Commander and Modern decks without overspending.`,
+    },
+    {
+      question: `Can you replace ${targetCard.name} without losing synergy?`,
+      answer: `Yes. By matching core mechanics like #${targetCard.oracle_tags.slice(0, 2).join(', #')} and identical ${colorLabel} color identity, recommended substitutes fill the exact same functional role on curve.`,
+    },
+  ];
+
   const jsonLd = [
     {
       '@context': 'https://schema.org',
       '@type': 'Article',
-      headline: `Best ${colorLabel} budget alternatives to ${targetCard.name}`,
-      description: `Definitive vector-matched budget substitutes for ${targetCard.name} ($${targetCard.price_usd.toFixed(2)}).`,
+      headline: `Top ${alternatives.length} Budget Cards Like ${targetCard.name} & Replacements`,
+      description: `Definitive vector-matched budget substitutes and cards like ${targetCard.name} ($${targetCard.price_usd.toFixed(2)}).`,
       author: { '@type': 'Organization', name: 'MTGCheap Data Lab' },
       publisher: { '@type': 'Organization', name: 'MTGCheap' },
       datePublished: '2026-08-03',
@@ -487,26 +516,14 @@ export default async function DynamicArticlePage({ params }: Props) {
     {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: `What is the best cheap budget alternative to ${targetCard.name}?`,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: alternatives.length > 0
-              ? `The top vector-matched budget alternative to ${targetCard.name} is ${topAlternative} ($${alternatives[0].price_usd.toFixed(2)}), offering a ${alternatives[0].similarity_score}% functional match while saving $${alternatives[0].dollar_savings.toFixed(2)}.`
-              : `Functional replacements for ${targetCard.name} are available for under $5.00 on CheapMTG.`,
-          },
+      mainEntity: faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
         },
-        {
-          '@type': 'Question',
-          name: `How can I replace ${targetCard.name} in MTG Commander on a budget?`,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: `You can replace ${targetCard.name} ($${targetCard.price_usd.toFixed(2)}) in EDH by swapping in lower-cost cards that share key Scryfall oracle tags like #${targetCard.oracle_tags.slice(0, 3).join(', #')} and identical color identity (${targetCard.color_identity.join(', ') || 'Colorless'}).`,
-          },
-        },
-      ],
+      })),
     },
   ];
 
@@ -548,8 +565,14 @@ export default async function DynamicArticlePage({ params }: Props) {
           </div>
 
           <h1 className="font-cinzel text-3xl sm:text-4xl font-black text-white leading-tight gradient-text-gold">
-            Best {colorLabel} budget alternatives to {targetCard.name}
+            Best Cards Like {targetCard.name} (Budget Alternatives & Replacements)
           </h1>
+
+          <p className="text-sm text-[#8b949e] leading-relaxed">
+            Looking for a replacement for <strong className="text-white">{targetCard.name}</strong> (${targetCard.price_usd.toFixed(2)})? 
+            Whether you&apos;re building a budget Commander deck or upgrading a casual 60-card list, these vector-ranked substitutes deliver 
+            comparable <span className="text-amber-300 font-semibold">{targetCard.cardRole}</span> effects for under $5.00.
+          </p>
 
           <div className="flex items-center gap-4 text-xs text-[#8b949e] font-mono border-b border-white/10 pb-6">
             <span>Automated Vector Analysis</span>
@@ -558,7 +581,7 @@ export default async function DynamicArticlePage({ params }: Props) {
               <Clock className="w-3.5 h-3.5 text-amber-400" /> 5 min read
             </span>
             <span>•</span>
-            <span>Updated August 3, 2026</span>
+            <span>Updated August 14, 2026</span>
           </div>
         </div>
 
@@ -574,7 +597,7 @@ export default async function DynamicArticlePage({ params }: Props) {
 
           <div className="space-y-3 flex-1 text-xs">
             <div className="flex justify-between items-baseline">
-              <h2 className="font-cinzel text-xl font-bold text-white">{targetCard.name}</h2>
+              <h2 className="font-cinzel text-xl font-bold text-white">Why Replace {targetCard.name}?</h2>
               <span className="font-mono text-lg font-black text-amber-400">${targetCard.price_usd.toFixed(2)} Market</span>
             </div>
             <p className="text-[#8b949e]">
@@ -608,7 +631,7 @@ export default async function DynamicArticlePage({ params }: Props) {
         {/* Swaps List with Card Images */}
         <section className="space-y-6">
           <h2 className="font-cinzel text-2xl font-bold text-white border-b border-white/10 pb-3">
-            Top Vector-Ranked Budget Swaps
+            Top {alternatives.length} Budget Cards Like {targetCard.name} (Ranked by Similarity)
           </h2>
 
           {alternatives.length === 0 ? (
@@ -708,6 +731,31 @@ export default async function DynamicArticlePage({ params }: Props) {
               ))}
             </div>
           )}
+        </section>
+
+        {/* FAQ Accordion Section for Long-Tail SEO */}
+        <section className="space-y-6 pt-6 border-t border-white/10">
+          <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-amber-400" /> Frequently Asked Questions About {targetCard.name} Replacements
+          </h2>
+          <div className="space-y-3">
+            {faqs.map((faq, i) => (
+              <details
+                key={i}
+                className="group glass-card rounded-2xl p-4 border border-white/10 transition-all [&_summary::-webkit-details-marker]:hidden cursor-pointer"
+              >
+                <summary className="flex items-center justify-between font-cinzel font-bold text-sm sm:text-base text-white group-hover:text-amber-300 transition-colors">
+                  <span>{faq.question}</span>
+                  <span className="ml-2 font-mono text-amber-400 text-lg transition-transform duration-300 group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-xs sm:text-sm text-[#8b949e] leading-relaxed border-t border-white/5 pt-3">
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
+          </div>
         </section>
 
         {/* Crawlable Backlinks Section: Similar Expensive Cards to Replace */}

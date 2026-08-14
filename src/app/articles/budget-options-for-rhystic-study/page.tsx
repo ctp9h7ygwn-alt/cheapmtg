@@ -9,23 +9,29 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mtgcheap.com';
 const canonicalUrl = `${baseUrl}/articles/budget-options-for-rhystic-study`;
 
 export const metadata: Metadata = {
-  title: 'Top 5 Budget Alternatives to Rhystic Study in Commander (EDH)',
+  title: 'Top 3 Budget Cards Like Rhystic Study & Replacements ($70+) | MTGCheap',
   description:
-    'Looking for cheap budget replacements for Rhystic Study in MTG Commander? Compare vector-analyzed cards like Unifying Theory, Soul Barrier, and Insight to save over $70.',
+    'Looking for cards like Rhystic Study ($70+) on a budget? Explore top-ranked blue enchantment replacements, spell-taxing substitutes, and cheap card draw options for Commander (EDH).',
   keywords: [
+    'cards like rhystic study',
+    'cards like rhystic study mtg',
+    'rhystic study replacement',
+    'replacement for rhystic study',
     'budget rhystic study',
     'rhystic study alternatives',
-    'cheap card draw edh',
-    'mtg commander budget swaps',
+    'rhystic study budget alternative',
+    'cheap rhystic study mtg',
+    'rhystic study substitute edh',
     'unifying theory mtg',
     'soul barrier mtg',
+    'idle thoughts mtg',
   ],
   alternates: {
     canonical: canonicalUrl,
   },
   openGraph: {
-    title: 'Top 5 Budget Alternatives to Rhystic Study in Commander',
-    description: 'Save over $70 with vector-matched functional replacements for Rhystic Study.',
+    title: 'Top 3 Budget Cards Like Rhystic Study & Replacements ($70+)',
+    description: 'Looking for cards like Rhystic Study on a budget? Save over $70 with vector-matched functional replacements for Commander.',
     type: 'article',
     url: canonicalUrl,
     images: [{ url: 'https://cards.scryfall.io/normal/front/9/f/9f37c5b6-a59c-45cd-9a99-e9357fe9ea1b.jpg?1783919146' }],
@@ -36,8 +42,8 @@ const JSON_LD = [
   {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Top 5 Budget Alternatives to Rhystic Study in Commander (EDH)',
-    description: 'Vector-matched functional budget alternatives to Rhystic Study in Magic: The Gathering.',
+    headline: 'Top 3 Budget Cards Like Rhystic Study & Replacements',
+    description: 'Vector-matched functional budget alternatives and cards like Rhystic Study in Magic: The Gathering.',
     author: { '@type': 'Organization', name: 'MTGCheap Data Lab' },
     publisher: { '@type': 'Organization', name: 'MTGCheap' },
     datePublished: '2026-08-03',
@@ -74,10 +80,18 @@ const JSON_LD = [
     mainEntity: [
       {
         '@type': 'Question',
-        name: 'What is the cheapest budget replacement for Rhystic Study?',
+        name: 'What are the best cards like Rhystic Study in MTG?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Unifying Theory ($0.44) and Soul Barrier ($0.25) are the top budget replacements for Rhystic Study, delivering spell taxation and card draw for under $1.',
+          text: 'Unifying Theory ($0.44), Soul Barrier ($0.25), and Idle Thoughts ($0.12) are top budget cards like Rhystic Study, offering opponent taxation and card advantage under $1.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What is the cheapest replacement for Rhystic Study?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Unifying Theory ($0.44) is the closest functional replacement with a 95% vector match, imposing a {2} mana tax when players cast spells.',
         },
       },
       {
@@ -85,7 +99,7 @@ const JSON_LD = [
         name: 'Why is Rhystic Study so expensive in EDH?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Rhystic Study costs over $45 due to high Commander demand and unique tax-based card draw mechanics.',
+          text: 'Rhystic Study costs over $70 due to its universal spell-taxation trigger that generates overwhelming card advantage in 4-player Commander games.',
         },
       },
     ],
@@ -169,8 +183,14 @@ export default function RhysticStudyArticlePage() {
           </div>
 
           <h1 className="font-cinzel text-3xl sm:text-4xl font-black text-white leading-tight gradient-text-gold">
-            Top Budget Alternatives to Rhystic Study in Commander
+            Best Cards Like Rhystic Study (Budget Alternatives & Replacements)
           </h1>
+
+          <p className="text-sm text-[#8b949e] leading-relaxed">
+            Looking for a budget replacement for <strong className="text-white">Rhystic Study</strong> ($70.78)? 
+            Whether you&apos;re brewing blue Commander decks or looking for cheaper spell-tax engines, these vector-ranked substitutes deliver 
+            consistent taxation and card advantage for under $1.00.
+          </p>
 
           <div className="flex items-center gap-4 text-xs text-[#8b949e] font-mono border-b border-white/10 pb-6">
             <span>By MTGCheap Data Lab</span>
