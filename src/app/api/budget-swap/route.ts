@@ -279,6 +279,31 @@ export async function GET(request: Request) {
       ]
     );
 
+const TAG_DESCRIPTIONS: Record<string, string> = {
+  'impact-effect': 'deals direct damage to opponents whenever creatures enter the battlefield',
+  'cast-tax': 'forces opponents to pay additional mana when casting spells',
+  'draw-tax': 'punishes opponents or yields benefits whenever they draw cards',
+  'asymmetrical-bounce': 'returns opponents’ nonland permanents to hand without disrupting your board',
+  'burst-draw': 'delivers high-volume card advantage into your hand',
+  'repeatable-pure-draw': 'provides ongoing turn-over-turn card advantage',
+  'pinger': 'delivers repeatable direct damage increments across the table',
+  'group-slug': 'accelerates the game by applying consistent damage pressure to all opponents',
+  'board-wipe': 'clears the board of creatures or nonland permanents',
+  'mana-rock': 'provides repeatable mana ramp from a nonland permanent',
+  'tutor': 'searches your library directly for key combo or answer cards',
+  'counterspell': 'counters target opponent spells directly from the stack',
+  'extra-turn': 'grants an additional turn step to push for a win',
+  'reanimation': 'returns high-impact creatures directly from the graveyard to the battlefield',
+  'aristocrat': 'triggers beneficial drain or card advantage when your creatures die',
+  'treasure': 'produces Treasure tokens for flexible mana ramp and color fixing',
+  'protection': 'shields your permanents or life total from opponent spells and attacks',
+  'anthem': 'provides a static power and toughness boost to your entire board',
+  'haste-enabler': 'grants haste so your creatures can attack immediately',
+  'token-generator': 'creates creature tokens to expand your board presence',
+  'graveyard-hate': 'exiles cards from opponent graveyards to disrupt recursion strategies',
+  'loot': 'lets you draw cards and discard to filter your hand',
+};
+
     // 4. Format Recommendations & Calculate Savings
     const alternatives = candidatesRes.rows.map((cand: any) => {
       const price = parseFloat(cand.price_usd);
@@ -286,7 +311,70 @@ export async function GET(request: Request) {
       const percentSavings = targetPrice > 0 ? Math.round((dollarSavings / targetPrice) * 100) : 0;
       const similarityScore = Math.max(0, Math.round(cand.vector_similarity * 100));
 
+      const candCmc = parseFloat(cand.mana_value || '0');
+      const targetCmc = parseFloat(targetCard.mana_value || '0');
+      const cmcDiff = targetCmc - candCmc;
+
+      let cmcComparison = '';
+      if (cmcDiff > 0) {
+        cmcComparison = `costs ${cmcDiff} less mana to cast (${candCmc} MV vs ${targetCmc} MV)`;
+      } else if (cmcDiff === 0) {
+        cmcComparison = `shares the exact same mana value (${candCmc} MV)`;
+      } else {
+        cmcComparison = `costs ${Math.abs(cmcDiff)} more mana to cast (${candCmc} MV)`;
+      }
+
+      const targetType = (targetCard.type_line || '').split('—')[0].trim();
+      const candType = (cand.type_line || '').split('—')[0].trim();
+      const isSameType = targetType.toLowerCase() === candType.toLowerCase();
+
+      const typeSentence = isSameType
+        ? `Matches ${targetCard.name}'s ${candType} card type`
+        : `Functions as a ${candType} alternative to ${targetCard.name}'s ${targetType}`;
+
       const sharedTagsClean = (cand.shared_tags || []).map((t: string) => t.replace('otag:', ''));
+
+      // Find the most descriptive shared tag if available
+      const matchedKeyTag = sharedTagsClean.find((t: string) => TAG_DESCRIPTIONS[t]);
+      let tagSentence = '';
+      if (matchedKeyTag && TAG_DESCRIPTIONS[matchedKeyTag]) {
+        tagSentence = `Directly shares the #${matchedKeyTag} mechanic (${TAG_DESCRIPTIONS[matchedKeyTag]}).`;
+      } else if (sharedTagsClean.length > 0) {
+        tagSentence = `Overlaps on functional mechanics including #${sharedTagsClean.slice(0, 3).join(', #')}.`;
+      } else {
+        tagSentence = `Fills a similar strategic role in Commander and deck construction.`;
+      }
+
+      const whySimilar = `${typeSentence} and ${cmcComparison}. ${tagSentence}`;
+
+      // Deterministic Trade-off & Nuance Analysis
+      const tradeOffs: string[] = [];
+      const candTextLower = (cand.oracle_text || '').toLowerCase();
+      const targetTextLower = (targetCard.oracle_text || '').toLowerCase();
+
+      if (candCmc > targetCmc) {
+        tradeOffs.push(`Costs ${candCmc - targetCmc} additional mana (${candCmc} MV vs ${targetCmc} MV), making it slightly slower on curve.`);
+      }
+
+      if ((candTextLower.includes('each player') || candTextLower.includes('all players') || candTextLower.includes('any player')) &&
+          (!targetTextLower.includes('each player') && !targetTextLower.includes('all players'))) {
+        tradeOffs.push(`Symmetrical effect: benefits all players at the table rather than uniquely favoring you.`);
+      }
+
+      if ((candTextLower.includes('{t}') || candTextLower.includes('pay') || candTextLower.includes('{1}') || candTextLower.includes('{2}')) &&
+          (!targetTextLower.includes('{t}') && !targetTextLower.includes('pay'))) {
+        tradeOffs.push(`Requires manual mana or tap investment to activate, whereas ${targetCard.name} functions passively.`);
+      }
+
+      if (candTextLower.includes('creature') && !targetTextLower.includes('creature')) {
+        tradeOffs.push(`Narrower trigger condition: specifically targets or triggers off creature spells/permanents.`);
+      }
+
+      if (tradeOffs.length === 0) {
+        tradeOffs.push(`At $${price.toFixed(2)} (${percentSavings}% less than ${targetCard.name}), it delivers ${similarityScore}% of the mechanical function, but lacks the absolute power ceiling of the original staple.`);
+      }
+
+      const whyNotPerfect = tradeOffs.join(' ');
 
       const tcgplayerUrl = `https://www.tcgplayer.com/search/magic/product?q=${encodeURIComponent(cand.name)}&utm_source=cheapmtg`;
       const manaPoolUrl = `https://manapool.com/cards?q=${encodeURIComponent(cand.name)}&ref=cheapmtg`;
@@ -306,6 +394,8 @@ export async function GET(request: Request) {
         similarity_score: similarityScore,
         shared_tag_count: cand.shared_tag_count,
         shared_tags: sharedTagsClean,
+        why_similar: whySimilar,
+        why_not_perfect: whyNotPerfect,
         dollar_savings: parseFloat(dollarSavings.toFixed(2)),
         percent_savings: percentSavings,
         tcgplayer_url: tcgplayerUrl,

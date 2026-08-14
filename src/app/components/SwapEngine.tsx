@@ -62,6 +62,8 @@ interface AlternativeCard {
   similarity_score: number;
   shared_tag_count: number;
   shared_tags: string[];
+  why_similar?: string;
+  why_not_perfect?: string;
   dollar_savings: number;
   percent_savings: number;
   tcgplayer_url: string;
@@ -748,9 +750,33 @@ function SwapEngineContent() {
                       )}
 
                       {/* Oracle Text */}
-                      <p className="bg-[#05070a]/70 p-3 rounded-xl border border-white/5 text-[#c9d1d9] text-[11px] italic leading-relaxed line-clamp-3">
+                      <p className="bg-[#05070a]/70 p-3 rounded-xl border border-white/5 text-[#c9d1d9] text-[11px] italic leading-relaxed">
                         {alt.oracle_text}
                       </p>
+
+                      {/* Analytical Breakdown: Why It's Similar */}
+                      {alt.why_similar && (
+                        <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl space-y-1">
+                          <div className="text-[11px] font-bold text-emerald-300 font-mono flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Why It&apos;s Similar
+                          </div>
+                          <p className="text-xs text-[#c9d1d9] leading-relaxed">
+                            {alt.why_similar}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Analytical Breakdown: Why It Isn't A Perfect Replacement */}
+                      {alt.why_not_perfect && (
+                        <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl space-y-1">
+                          <div className="text-[11px] font-bold text-amber-300 font-mono flex items-center gap-1.5">
+                            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" /> Why It Isn&apos;t A Perfect Replacement
+                          </div>
+                          <p className="text-xs text-[#c9d1d9] leading-relaxed">
+                            {alt.why_not_perfect}
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     {/* CTA Affiliate Links */}
