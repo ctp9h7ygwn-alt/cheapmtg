@@ -393,6 +393,11 @@ export async function POST(request: Request) {
         const winconOtags = card.oracle_tags
           .filter((t) => WINCON_KEYWORDS.some((kw) => t.toLowerCase().includes(kw)))
           .map((t) => `otag:${t}`);
+        const primaryTypes = card.type_line
+          ? ['Creature', 'Instant', 'Sorcery', 'Artifact', 'Enchantment', 'Planeswalker', 'Land', 'Battle'].filter((t) =>
+              card.type_line.toLowerCase().includes(t.toLowerCase())
+            )
+          : [];
         const isWinconCard = winconOtags.length > 0;
 
         const candRes = await query(
@@ -410,11 +415,46 @@ export async function POST(request: Request) {
              AND c.price_usd <= $4
              AND c.price_usd > 0
              AND ($5::text[] IS NULL OR c.color_identity <@ $5::text[])
-             AND ($6::boolean = FALSE OR COALESCE(c.is_silver_bordered, FALSE) = FALSE)
-             AND ($7::boolean = FALSE OR EXISTS (
+             AND c.type_line NOT ILIKE '%Token%'
+             AND c.type_line NOT ILIKE '%Emblem%'
+             AND c.type_line NOT ILIKE '%Art Series%'
+             AND c.type_line NOT ILIKE '%Card Back%'
+             AND c.type_line NOT ILIKE '%Helper%'
+             AND c.type_line NOT ILIKE '%Conspiracy%'
+             AND c.type_line NOT ILIKE '%Plane%'
+             AND c.type_line NOT ILIKE '%Phenomenon%'
+             AND c.type_line NOT ILIKE '%Scheme%'
+             AND c.type_line NOT ILIKE '%Vanguard%'
+             AND c.type_line NOT ILIKE '%Sticker%'
+             AND c.type_line NOT ILIKE '%Attraction%'
+             AND c.type_line NOT ILIKE '%Dungeon%'
+             AND ($6::boolean = FALSE OR (
+               COALESCE(c.is_silver_bordered, FALSE) = FALSE
+               AND LOWER(c.oracle_text) NOT LIKE '%silver-bordered%'
+               AND LOWER(c.oracle_text) NOT LIKE '%acorn permanent%'
+               AND LOWER(c.oracle_text) NOT LIKE '%playtest%'
+               AND LOWER(c.oracle_text) NOT LIKE '%sticker%'
+               AND LOWER(c.oracle_text) NOT LIKE '%open an attraction%'
+               AND c.scryfall_uri NOT LIKE '%/unh/%'
+               AND c.scryfall_uri NOT LIKE '%/ust/%'
+               AND c.scryfall_uri NOT LIKE '%/ugl/%'
+               AND c.scryfall_uri NOT LIKE '%/und/%'
+               AND c.scryfall_uri NOT LIKE '%/unf/%'
+               AND c.scryfall_uri NOT LIKE '%/cmb1/%'
+               AND c.scryfall_uri NOT LIKE '%/cmb2/%'
+               AND c.scryfall_uri NOT LIKE '%/htr/%'
+               AND c.scryfall_uri NOT LIKE '%/phtr/%'
+               AND c.scryfall_uri NOT LIKE '%/h17/%'
+               AND c.scryfall_uri NOT LIKE '%/ptg/%'
+               AND c.name NOT ILIKE 'The Colossal Dreadmaw'
+             ))
+             AND ($7::text[] IS NULL OR cardinality($7::text[]) = 0 OR EXISTS (
+               SELECT 1 FROM unnest($7::text[]) t WHERE c.type_line ILIKE '%' || t || '%'
+             ))
+             AND ($8::boolean = FALSE OR EXISTS (
                SELECT 1 FROM oracle_tags ot_w
                WHERE ot_w.card_oracle_id = c.oracle_id
-               AND (ot_w.tag = ANY($8::text[]) OR ot_w.tag LIKE '%win-condition%' OR ot_w.tag LIKE '%wincon%' OR ot_w.tag LIKE '%alternate-win-condition%')
+               AND (ot_w.tag = ANY($9::text[]) OR ot_w.tag LIKE '%win-condition%' OR ot_w.tag LIKE '%wincon%' OR ot_w.tag LIKE '%alternate-win-condition%')
              ))
            ORDER BY ce.embedding <=> $1::vector ASC
            LIMIT 1`,
@@ -425,6 +465,7 @@ export async function POST(request: Request) {
             maxSwapPrice,
             card.color_identity,
             exclude_silver,
+            primaryTypes,
             isWinconCard,
             winconOtags.length > 0 ? winconOtags : ['otag:win-condition', 'otag:alternate-win-condition'],
           ]
