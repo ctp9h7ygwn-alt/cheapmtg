@@ -152,6 +152,9 @@ export default function DeckBudgetizerPage() {
                 BETA
               </span>
             </Link>
+            <Link href="/budget-commander" className="text-[#8b949e] hover:text-white transition-colors">
+              Budget Hub
+            </Link>
             <Link href="/articles" className="text-[#8b949e] hover:text-white transition-colors flex items-center gap-1">
               <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Articles
             </Link>

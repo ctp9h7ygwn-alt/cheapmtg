@@ -43,14 +43,55 @@ interface AppliedSwap {
 
 // Helper to extract Moxfield deck ID
 function extractMoxfieldId(input: string): string | null {
-  const match = input.match(/moxfield\.com\/decks\/([a-zA-Z0-9_-]+)/i);
-  return match ? match[1] : null;
+  const match =
+    input.match(/moxfield\.com\/(?:decks|public)\/(?:decks\/)?([a-zA-Z0-9_-]+)/i) ||
+    input.match(/moxfield\.com\/decks\/([a-zA-Z0-9_-]+)/i);
+  return match ? match[1].split('?')[0].split('/')[0] : null;
 }
 
 // Helper to extract Archidekt deck ID
 function extractArchidektId(input: string): string | null {
   const match = input.match(/archidekt\.com\/decks\/([0-9]+)/i);
-  return match ? match[1] : null;
+  return match ? match[1].split('?')[0].split('/')[0] : null;
+}
+
+function extractMoxfieldCards(data: any): ParsedCard[] {
+  const cards: ParsedCard[] = [];
+  const parseBoard = (boardObj: any) => {
+    if (!boardObj || typeof boardObj !== 'object') return;
+    if (Array.isArray(boardObj)) {
+      for (const item of boardObj) {
+        const name = item.card?.name || item.name;
+        const count = item.quantity || item.count || 1;
+        if (name && typeof name === 'string') cards.push({ name: name.trim(), count });
+      }
+    } else {
+      for (const [key, info] of Object.entries(boardObj) as any[]) {
+        const name = info?.card?.name || info?.name || key;
+        const count = info?.quantity || info?.count || 1;
+        if (name && typeof name === 'string') cards.push({ name: name.trim(), count });
+      }
+    }
+  };
+
+  // v2 API format
+  if (data.commanders) parseBoard(data.commanders);
+  if (data.mainboard) parseBoard(data.mainboard);
+  if (data.companions) parseBoard(data.companions);
+  if (data.signatureSpells) parseBoard(data.signatureSpells);
+
+  // v3 API format
+  if (data.boards) {
+    if (data.boards.commanders?.cards) parseBoard(data.boards.commanders.cards);
+    if (data.boards.mainboard?.cards) parseBoard(data.boards.mainboard.cards);
+    if (data.boards.companions?.cards) parseBoard(data.boards.companions.cards);
+    if (data.boards.signatureSpells?.cards) parseBoard(data.boards.signatureSpells.cards);
+  }
+
+  // Flat card array format
+  if (data.cards && Array.isArray(data.cards)) parseBoard(data.cards);
+
+  return cards;
 }
 
 // Parse text decklist lines (e.g. "1 Sol Ring", "1x Rhystic Study")
@@ -58,20 +99,46 @@ function parseTextDecklist(text: string): ParsedCard[] {
   const lines = text.split('\n');
   const cards: ParsedCard[] = [];
 
+  const SECTION_HEADERS = [
+    'commander', 'commanders', 'deck', 'mainboard', 'sideboard', 'maybeboard', 
+    'tokens', 'lands', 'creatures', 'artifacts', 'enchantments', 'instants', 'sorceries', 'planeswalkers', 'other'
+  ];
+
   for (const rawLine of lines) {
-    const line = rawLine.trim();
+    let line = rawLine.trim();
     if (!line || line.startsWith('//') || line.startsWith('#')) continue;
 
-    // Match "1x Card Name" or "1 Card Name"
-    const match = line.match(/^(\d+)\s*x?\s+(.+)$/i);
+    // Check if line is a section header like "Commander:" or "COMMANDER"
+    const headerCheck = line.replace(/[:]/g, '').trim().toLowerCase();
+    if (SECTION_HEADERS.includes(headerCheck)) continue;
+
+    // Remove category tags like #!Commander, #Ramp, etc.
+    line = line.replace(/#[^\s]+/g, '').trim();
+
+    // Remove foil tags like *F*, *FOIL*, *E*
+    line = line.replace(/\*[a-zA-Z0-9]+\*/g, '').trim();
+
+    // Match "1x Card Name (SET) 123" or "1 Card Name [SET]"
+    const match = line.match(/^(\d+)\s*[xX*]?\s+(.+)$/i);
     if (match) {
       const count = parseInt(match[1], 10);
-      const name = match[2].trim().replace(/\s*\([^)]*\)\s*$/g, ''); // Remove set tags
-      if (name) {
+      let name = match[2].trim();
+      // Remove set and collector number: (ABC) 123 or [ABC] 123
+      name = name.replace(/\s*\([a-zA-Z0-9_-]+\)\s*[a-zA-Z0-9_-]*/g, '');
+      name = name.replace(/\s*\[[a-zA-Z0-9_-]+\]\s*[a-zA-Z0-9_-]*/g, '');
+      name = name.replace(/\s*\*.*\*\s*$/g, '');
+      name = name.trim();
+
+      if (name && !SECTION_HEADERS.includes(name.toLowerCase())) {
         cards.push({ name, count });
       }
     } else if (line.length > 2 && !line.includes(':')) {
-      cards.push({ name: line.trim(), count: 1 });
+      let name = line.replace(/\s*\([a-zA-Z0-9_-]+\)\s*[a-zA-Z0-9_-]*/g, '')
+                     .replace(/\s*\[[a-zA-Z0-9_-]+\]\s*[a-zA-Z0-9_-]*/g, '')
+                     .trim();
+      if (name && !SECTION_HEADERS.includes(name.toLowerCase())) {
+        cards.push({ name, count: 1 });
+      }
     }
   }
 
@@ -92,42 +159,66 @@ export async function POST(request: Request) {
     const archId = extractArchidektId(deck_input);
 
     if (moxId) {
-      try {
-        const res = await fetch(`https://api.moxfield.com/v2/decks/all/${moxId}`, {
-          headers: { 'User-Agent': 'CheapMTG-DeckBudgetizer/1.0' },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          const mainboard = data.mainboard || {};
-          const commanders = data.commanders || {};
+      const moxEndpoints = [
+        `https://api2.moxfield.com/v2/decks/all/${moxId}`,
+        `https://api.moxfield.com/v2/decks/all/${moxId}`,
+        `https://api2.moxfield.com/v3/decks/all/${moxId}`,
+      ];
 
-          for (const [name, info] of Object.entries(commanders) as any) {
-            parsedCards.push({ name, count: info.quantity || 1 });
-          }
-          for (const [name, info] of Object.entries(mainboard) as any) {
-            parsedCards.push({ name, count: info.quantity || 1 });
-          }
-        }
-      } catch (e) {
-        console.error('Failed to fetch Moxfield deck:', e);
-      }
-    } else if (archId) {
-      try {
-        const res = await fetch(`https://archidekt.com/api/decks/${archId}/`, {
-          headers: { 'User-Agent': 'CheapMTG-DeckBudgetizer/1.0' },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          const cardsList = data.cards || [];
-          for (const c of cardsList) {
-            const name = c.card?.oracleCard?.name || c.card?.name;
-            if (name) {
-              parsedCards.push({ name, count: c.quantity || 1 });
+      for (const endpoint of moxEndpoints) {
+        try {
+          const res = await fetch(endpoint, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+              'Accept': 'application/json, text/plain, */*',
+              'Accept-Language': 'en-US,en;q=0.9',
+              'Referer': 'https://www.moxfield.com/',
+            },
+            next: { revalidate: 3600 },
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            const extracted = extractMoxfieldCards(data);
+            if (extracted.length > 0) {
+              parsedCards = extracted;
+              break;
             }
           }
+        } catch (e) {
+          console.error(`Failed fetching from Moxfield endpoint ${endpoint}:`, e);
         }
-      } catch (e) {
-        console.error('Failed to fetch Archidekt deck:', e);
+      }
+    } else if (archId) {
+      const archEndpoints = [
+        `https://archidekt.com/api/decks/${archId}/`,
+        `https://archidekt.com/api/decks/${archId}/small/`,
+      ];
+
+      for (const endpoint of archEndpoints) {
+        try {
+          const res = await fetch(endpoint, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+              'Accept': 'application/json',
+            },
+            next: { revalidate: 3600 },
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            const cardsList = data.cards || [];
+            for (const c of cardsList) {
+              const name = c.card?.oracleCard?.name || c.card?.name;
+              if (name) {
+                parsedCards.push({ name: name.trim(), count: c.quantity || 1 });
+              }
+            }
+            if (parsedCards.length > 0) break;
+          }
+        } catch (e) {
+          console.error(`Failed fetching from Archidekt endpoint ${endpoint}:`, e);
+        }
       }
     }
 
@@ -138,7 +229,10 @@ export async function POST(request: Request) {
 
     if (parsedCards.length === 0) {
       return NextResponse.json(
-        { error: 'Could not parse any valid MTG cards from the provided link or text. Please check the deck URL or list.' },
+        {
+          error:
+            'Could not parse any valid MTG cards. If using a Moxfield or Archidekt link, ensure the deck is set to Public, or click "Export" on the deck site and paste the text decklist directly here.',
+        },
         { status: 400 }
       );
     }
