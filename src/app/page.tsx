@@ -79,6 +79,9 @@ export default function Home() {
                   BETA
                 </span>
               </Link>
+              <Link href="/budget-commander" className="text-[#8b949e] hover:text-white transition-colors">
+                Budget Hub
+              </Link>
               <Link href="/articles" className="text-[#8b949e] hover:text-white transition-colors flex items-center gap-1">
                 <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Articles
               </Link>
@@ -102,12 +105,60 @@ export default function Home() {
         {/* Client-Side Interactive Swap Engine */}
         <SwapEngine />
 
-        {/* Featured SEO Strategy Articles Section */}
+        {/* Featured Topic Clusters & Functional Category Guides */}
         <section className="pt-12 border-t border-white/10 space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="font-cinzel text-2xl font-bold text-white flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-amber-400" /> Featured Budget Strategy Articles
+                <BookOpen className="w-5 h-5 text-amber-400" /> Budget Commander Topic Clusters
+              </h2>
+              <p className="text-xs text-[#8b949e] mt-0.5">
+                Explore curated budget staples, interactive mana-base generators, and role-based guides.
+              </p>
+            </div>
+            <Link
+              href="/budget-commander"
+              className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1"
+            >
+              Explore Hub Directory <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
+            {[
+              { name: 'Core Staples', href: '/budget-commander/staples', color: 'text-amber-300' },
+              { name: 'Mana Base Tool', href: '/budget-commander/mana-base', color: 'text-emerald-300' },
+              { name: 'Deckbuilding Guide', href: '/budget-commander/deck-building', color: 'text-cyan-300' },
+              { name: 'Card Draw', href: '/budget-commander/card-draw', color: 'text-blue-300' },
+              { name: 'Ramp & Rocks', href: '/budget-commander/ramp', color: 'text-orange-300' },
+              { name: 'Removal', href: '/budget-commander/removal', color: 'text-red-300' },
+              { name: 'Board Wipes', href: '/budget-commander/board-wipes', color: 'text-purple-300' },
+              { name: 'Protection', href: '/budget-commander/protection', color: 'text-teal-300' },
+              { name: 'Counterspells', href: '/budget-commander/counterspells', color: 'text-sky-300' },
+              { name: 'Tutors', href: '/budget-commander/tutors', color: 'text-violet-300' },
+              { name: 'Dual Lands', href: '/budget-commander/dual-lands', color: 'text-yellow-300' },
+              { name: 'Cards Under $1', href: '/budget-commander/cards-under-1-dollar', color: 'text-emerald-400' },
+            ].map((topic) => (
+              <Link
+                key={topic.href}
+                href={topic.href}
+                className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-amber-500/40 hover:bg-white/[0.06] transition-all text-center space-y-1 group"
+              >
+                <div className={`font-bold text-xs ${topic.color} group-hover:scale-105 transition-transform`}>
+                  {topic.name}
+                </div>
+                <div className="text-[10px] text-[#8b949e]">Budget Guide</div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Featured SEO Strategy Articles Section */}
+        <section className="pt-8 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-cinzel text-xl font-bold text-white flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-amber-400" /> Featured Staple Swap Breakdown Guides
               </h2>
               <p className="text-xs text-[#8b949e] mt-0.5">
                 In-depth vector analysis and deckbuilding guides for top Commander staples.
@@ -117,7 +168,7 @@ export default function Home() {
               href="/articles"
               className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1"
             >
-              View All Articles <ArrowRight className="w-3.5 h-3.5" />
+              View All 1,500+ Guides <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 

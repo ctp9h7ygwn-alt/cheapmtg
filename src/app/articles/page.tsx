@@ -106,8 +106,11 @@ export default async function ArticlesIndexPage() {
                 BETA
               </span>
             </Link>
+            <Link href="/budget-commander" className="text-[#8b949e] hover:text-white transition-colors">
+              Budget Hub
+            </Link>
             <Link href="/articles" className="text-amber-400 font-bold border-b border-amber-400 pb-0.5">
-              Articles
+              Card Articles
             </Link>
           </nav>
         </div>
@@ -117,12 +120,51 @@ export default async function ArticlesIndexPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 relative z-10">
         <div className="text-center space-y-4 max-w-3xl mx-auto">
           <h1 className="font-cinzel text-4xl sm:text-5xl font-black tracking-wide gradient-text-gold">
-            Budget Guides
+            MTG Budget Guides &amp; Topic Hubs
           </h1>
           <p className="text-xs sm:text-sm text-[#8b949e]">
-            Comprehensive vector-analyzed MTG budget swap guides for high-demand Commander & Modern staples.
+            Comprehensive vector-analyzed MTG budget swap guides for high-demand Commander &amp; Modern staples, organized by card and strategic function.
           </p>
         </div>
+
+        {/* Featured Strategic Topic Clusters Hubs */}
+        <section className="glass-panel rounded-3xl p-6 sm:p-8 border border-white/10 space-y-5">
+          <div className="flex items-center justify-between">
+            <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-400" /> Commander Strategy &amp; Topic Clusters
+            </h2>
+            <Link href="/budget-commander" className="text-xs font-bold text-amber-400 hover:text-amber-300">
+              View All Hubs →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
+            {[
+              { name: 'Core Staples', href: '/budget-commander/staples', color: 'text-amber-300' },
+              { name: 'Mana Base Tool', href: '/budget-commander/mana-base', color: 'text-emerald-300' },
+              { name: 'Deckbuilding', href: '/budget-commander/deck-building', color: 'text-cyan-300' },
+              { name: 'Card Draw', href: '/budget-commander/card-draw', color: 'text-blue-300' },
+              { name: 'Ramp & Rocks', href: '/budget-commander/ramp', color: 'text-orange-300' },
+              { name: 'Removal', href: '/budget-commander/removal', color: 'text-red-300' },
+              { name: 'Board Wipes', href: '/budget-commander/board-wipes', color: 'text-purple-300' },
+              { name: 'Protection', href: '/budget-commander/protection', color: 'text-teal-300' },
+              { name: 'Counterspells', href: '/budget-commander/counterspells', color: 'text-sky-300' },
+              { name: 'Tutors', href: '/budget-commander/tutors', color: 'text-violet-300' },
+              { name: 'Dual Lands', href: '/budget-commander/dual-lands', color: 'text-yellow-300' },
+              { name: 'Cards Under $1', href: '/budget-commander/cards-under-1-dollar', color: 'text-emerald-400' },
+            ].map((topic) => (
+              <Link
+                key={topic.href}
+                href={topic.href}
+                className="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-amber-500/40 hover:bg-white/[0.06] transition-all text-center space-y-1 group"
+              >
+                <div className={`font-bold text-xs ${topic.color} group-hover:scale-105 transition-transform`}>
+                  {topic.name}
+                </div>
+                <div className="text-[10px] text-[#8b949e]">Budget Guide</div>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         {/* Articles Grid with Infinite Scroll */}
         <InfiniteArticlesGrid initialCards={initialCards} initialHasMore={initialHasMore} />

@@ -41,6 +41,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  const clusterUrls: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/budget-commander`, lastModified: stableDate, changeFrequency: 'daily' as const, priority: 1.0 },
+    { url: `${baseUrl}/budget-commander/staples`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.95 },
+    { url: `${baseUrl}/budget-commander/deck-building`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.95 },
+    { url: `${baseUrl}/budget-commander/alternatives`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.95 },
+    { url: `${baseUrl}/budget-commander/mana-base`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.95 },
+    { url: `${baseUrl}/budget-commander/card-draw`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/ramp`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/removal`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/board-wipes`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/protection`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/counterspells`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/tutors`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/lands`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/dual-lands`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/cards-under-1-dollar`, lastModified: stableDate, changeFrequency: 'weekly' as const, priority: 0.9 },
+  ];
+
   return [
     {
       url: baseUrl,
@@ -60,6 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily' as const,
       priority: 0.9,
     },
+    ...clusterUrls,
     ...staticArticles,
     ...articleUrls,
   ];

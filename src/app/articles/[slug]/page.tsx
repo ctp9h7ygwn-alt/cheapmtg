@@ -548,8 +548,11 @@ export default async function DynamicArticlePage({ params }: Props) {
                 BETA
               </span>
             </Link>
+            <Link href="/budget-commander" className="text-[#8b949e] hover:text-white transition-colors">
+              Budget Hub
+            </Link>
             <Link href="/articles" className="text-amber-400 font-bold">
-              Articles
+              Card Articles
             </Link>
           </nav>
         </div>
@@ -559,9 +562,41 @@ export default async function DynamicArticlePage({ params }: Props) {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10 relative z-10">
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-xs text-[#8b949e] font-mono">
+            <Link href="/" className="hover:text-amber-300">Home</Link>
+            <span>/</span>
+            <Link href="/budget-commander" className="hover:text-amber-300">Budget Commander</Link>
+            <span>/</span>
             <Link href="/articles" className="hover:text-amber-300">Articles</Link>
             <span>/</span>
             <span className="text-amber-400">Budget Analysis</span>
+          </div>
+
+          {/* Contextual Parent Cluster Banner */}
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+              <span className="text-[#c9d1d9]">
+                Part of our <strong className="text-white">Budget Commander Strategy Series</strong>:
+              </span>
+            </div>
+            <Link
+              href={
+                targetCard.cardRole.includes('Draw')
+                  ? '/budget-commander/card-draw'
+                  : targetCard.cardRole.includes('Wipe')
+                  ? '/budget-commander/board-wipes'
+                  : targetCard.cardRole.includes('Removal')
+                  ? '/budget-commander/removal'
+                  : targetCard.cardRole.includes('Tutor')
+                  ? '/budget-commander/tutors'
+                  : targetCard.cardRole.includes('Ramp')
+                  ? '/budget-commander/ramp'
+                  : '/budget-commander/staples'
+              }
+              className="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 shrink-0 ml-2"
+            >
+              View All {targetCard.cardRole} Guides →
+            </Link>
           </div>
 
           <h1 className="font-cinzel text-3xl sm:text-4xl font-black text-white leading-tight gradient-text-gold">
