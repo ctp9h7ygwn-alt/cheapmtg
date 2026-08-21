@@ -12,10 +12,23 @@ const nextConfig = {
     return config;
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'cards.scryfall.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.scryfall.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.scryfall.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'svgs.scryfall.io',
       },
     ],
   },

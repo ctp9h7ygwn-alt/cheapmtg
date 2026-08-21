@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Maximize2, X, Layers } from 'lucide-react';
 
 interface ExpandableCardImageProps {
-  src: string;
+  src?: string | null;
   alt: string;
   title: string;
   sizes?: string;
@@ -22,6 +22,13 @@ export default function ExpandableCardImage({
   imageClassName = 'object-cover',
 }: ExpandableCardImageProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState<string>(src || '');
+
+  useEffect(() => {
+    setCurrentSrc(src || '');
+    setHasError(false);
+  }, [src]);
 
   useEffect(() => {
     function handleCloseOthers() {
@@ -49,11 +56,24 @@ export default function ExpandableCardImage({
     setIsOpen(true);
   };
 
-  if (!src) {
+  const handleImageError = () => {
+    // If the original URL failed, attempt to fetch directly via Scryfall Named Image API
+    const cleanCardName = title.split(' // ')[0].trim();
+    const fallbackUrl = `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(cleanCardName)}&format=image&version=normal`;
+    
+    if (currentSrc !== fallbackUrl) {
+      setCurrentSrc(fallbackUrl);
+    } else {
+      setHasError(true);
+    }
+  };
+
+  if (!currentSrc || hasError) {
     return (
-      <div className={`flex flex-col items-center justify-center p-2 text-center text-[#8b949e] ${className}`}>
-        <Layers className="w-8 h-8 mb-1 text-white/20" />
-        <span className="text-[10px]">No Image</span>
+      <div className={`flex flex-col items-center justify-center p-3 text-center text-[#8b949e] bg-[#090d16] border border-white/10 ${className}`}>
+        <Layers className="w-6 h-6 mb-1 text-amber-400/40" />
+        <span className="text-[10px] font-cinzel font-bold text-white line-clamp-2 px-1">{title}</span>
+        <span className="text-[9px] text-[#8b949e] mt-0.5">MTG Card</span>
       </div>
     );
   }
@@ -66,10 +86,12 @@ export default function ExpandableCardImage({
         title={`Click to preview ${title}`}
       >
         <Image
-          src={src}
+          src={currentSrc}
           alt={alt}
           fill
+          unoptimized
           sizes={sizes}
+          onError={handleImageError}
           className={`transition-transform duration-500 group-hover:scale-105 ${imageClassName}`}
         />
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold backdrop-blur-[2px] gap-1.5">
@@ -103,9 +125,10 @@ export default function ExpandableCardImage({
             {/* Premium Card Scan Display */}
             <div className="relative aspect-[488/680] w-full max-w-[320px] sm:max-w-[360px] rounded-2xl overflow-hidden shadow-2xl border border-white/15 bg-[#05070a]">
               <Image
-                src={src}
+                src={currentSrc}
                 alt={title}
                 fill
+                unoptimized
                 sizes="(max-width: 400px) 100vw, 360px"
                 className="object-contain bg-[#05070a]"
                 priority

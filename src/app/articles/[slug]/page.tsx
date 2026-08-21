@@ -812,7 +812,7 @@ export default async function DynamicArticlePage({ params }: Props) {
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-16 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-[#090d16] relative">
                       {rel.image_uri ? (
-                        <Image src={rel.image_uri} alt={rel.name} fill sizes="48px" className="object-cover group-hover:scale-105 transition-transform" />
+                        <Image src={rel.image_uri} alt={rel.name} fill unoptimized sizes="48px" className="object-cover group-hover:scale-105 transition-transform" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[8px] text-[#8b949e]">Card</div>
                       )}

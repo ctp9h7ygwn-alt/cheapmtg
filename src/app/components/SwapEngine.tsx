@@ -328,6 +328,7 @@ function SwapEngineContent() {
                 src={enlargedImage.src}
                 alt={enlargedImage.title}
                 fill
+                unoptimized
                 sizes="(max-width: 400px) 100vw, 360px"
                 className="object-contain bg-[#05070a]"
                 priority
@@ -554,6 +555,7 @@ function SwapEngineContent() {
                     src={targetCard.image_uri}
                     alt={`${targetCard.name} - ${targetCard.type_line} Magic: The Gathering card`}
                     fill
+                    unoptimized
                     sizes="(max-width: 1024px) 100vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
@@ -684,6 +686,7 @@ function SwapEngineContent() {
                                 src={alt.image_uri}
                                 alt={`${alt.name} - budget alternative Magic: The Gathering card`}
                                 fill
+                                unoptimized
                                 sizes="96px"
                                 className="object-cover transition-transform duration-300 group-hover/img:scale-110"
                               />
