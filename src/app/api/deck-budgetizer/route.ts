@@ -55,6 +55,70 @@ function extractArchidektId(input: string): string | null {
   return match ? match[1].split('?')[0].split('/')[0] : null;
 }
 
+// Helper to extract ManaScry share/deck ID
+function extractManaScryId(input: string): string | null {
+  const match =
+    input.match(/manascry\.com\/(?:share|decks|lists|d)\/([a-zA-Z0-9_-]+)/i) ||
+    input.match(/manascry\.com\/([a-zA-Z0-9_-]{32,})/i);
+  return match ? match[1].split('?')[0].split('/')[0] : null;
+}
+
+async function fetchManaScryCards(shareId: string): Promise<ParsedCard[]> {
+  const urls = [
+    `https://manascry.com/share/${shareId}`,
+    `https://manascry.com/api/share/${shareId}`,
+    `https://manascry.com/decks/${shareId}`,
+  ];
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+        },
+      });
+
+      if (res.ok) {
+        const text = await res.text();
+        const cards: ParsedCard[] = [];
+
+        // Match escaped RSC JSON payloads as well as standard JSON
+        const rscRegex = /(?:\\"name\\":\\"([^\\"]+)\\"[^{}]*?\\"quantity\\":(\d+)|\\"quantity\\":(\d+)[^{}]*?\\"name\\":\\"([^\\"]+)\\"|\\"name\\":\\"([^\\"]+)\\"[^{}]*?\\"count\\":(\d+))/g;
+        let match;
+        while ((match = rscRegex.exec(text)) !== null) {
+          const name = match[1] || match[4] || match[5];
+          const count = parseInt(match[2] || match[3] || match[6] || '1', 10);
+          if (name && count && !['NM', 'LP', 'MP', 'HP', 'DMG'].includes(name)) {
+            cards.push({ name: name.trim(), count });
+          }
+        }
+
+        // Standard unescaped JSON match
+        if (cards.length === 0) {
+          const standardRegex = /(?:\"name\":\"([^\"]+)\"[^{}]*?\"quantity\":(\d+)|\"quantity\":(\d+)[^{}]*?\"name\":\"([^\"]+)\")/g;
+          while ((match = standardRegex.exec(text)) !== null) {
+            const name = match[1] || match[4];
+            const count = parseInt(match[2] || match[3] || '1', 10);
+            if (name && count && !['NM', 'LP', 'MP', 'HP', 'DMG'].includes(name)) {
+              cards.push({ name: name.trim(), count });
+            }
+          }
+        }
+
+        if (cards.length > 0) {
+          return cards;
+        }
+      }
+    } catch (e) {
+      console.error(`Failed to fetch from ManaScry ${url}:`, e);
+    }
+  }
+
+  return [];
+}
+
 function extractMoxfieldCards(data: any): ParsedCard[] {
   const cards: ParsedCard[] = [];
   const parseBoard = (boardObj: any) => {
@@ -151,14 +215,17 @@ export async function POST(request: Request) {
     const { deck_input, target_budget = 100, exclude_silver = true } = body;
 
     if (!deck_input || typeof deck_input !== 'string') {
-      return NextResponse.json({ error: 'Please provide a Moxfield URL, Archidekt URL, or text decklist.' }, { status: 400 });
+      return NextResponse.json({ error: 'Please provide a Moxfield URL, ManaScry link, Archidekt URL, or text decklist.' }, { status: 400 });
     }
 
     let parsedCards: ParsedCard[] = [];
+    const manaScryId = extractManaScryId(deck_input);
     const moxId = extractMoxfieldId(deck_input);
     const archId = extractArchidektId(deck_input);
 
-    if (moxId) {
+    if (manaScryId) {
+      parsedCards = await fetchManaScryCards(manaScryId);
+    } else if (moxId) {
       const moxEndpoints = [
         `https://api2.moxfield.com/v2/decks/all/${moxId}`,
         `https://api.moxfield.com/v2/decks/all/${moxId}`,
@@ -231,7 +298,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error:
-            'Could not parse any valid MTG cards. If using a Moxfield or Archidekt link, ensure the deck is set to Public, or click "Export" on the deck site and paste the text decklist directly here.',
+            'Could not parse any valid MTG cards. If using a ManaScry, Moxfield, or Archidekt link, ensure the deck is public, or click "Export" and paste the text decklist directly here.',
         },
         { status: 400 }
       );

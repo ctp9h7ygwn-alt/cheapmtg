@@ -67,6 +67,10 @@ interface BudgetizerResult {
 
 const PRESET_SAMPLE_DECKS = [
   {
+    name: 'ManaScry Share Link',
+    url: 'https://manascry.com/share/70244bd10bc55d884d1603ee88adbc3fcc3dc3b24e6a727c0bf5ba9e22e87c64',
+  },
+  {
     name: 'Moxfield Sample Deck',
     url: 'https://www.moxfield.com/decks/sample-edh-staples',
   },
@@ -89,7 +93,7 @@ export default function DeckBudgetizerPage() {
 
   const handleRunBudgetizer = async () => {
     if (!deckInput.trim()) {
-      setErrorMsg('Please paste a Moxfield URL, Archidekt URL, or text decklist.');
+      setErrorMsg('Please paste a ManaScry link, Moxfield URL, Archidekt URL, or text decklist.');
       return;
     }
 
@@ -108,14 +112,13 @@ export default function DeckBudgetizerPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to budgetize deck.');
+        throw new Error(data.error || 'Failed to optimize deck');
       }
 
       setResult(data);
     } catch (err: any) {
-      setErrorMsg(err.message);
-      setResult(null);
-    } fontFinally: {
+      setErrorMsg(err.message || 'An unexpected error occurred.');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -173,19 +176,38 @@ export default function DeckBudgetizerPage() {
             </span>
           </h1>
           <p className="text-[#8b949e] text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            Paste your Moxfield URL, Archidekt link, or raw decklist. Set your target budget, and our vector engine automatically swaps expensive cards to fit your budget.
+            Paste your <strong>ManaScry share link</strong>, <strong>Moxfield URL</strong>, <strong>Archidekt deck</strong>, or raw text decklist. Set your target budget, and our vector engine automatically swaps expensive cards to fit your budget.
           </p>
         </section>
 
         {/* Form Controls */}
         <section className="glass-panel rounded-3xl p-6 sm:p-8 border border-white/10 max-w-4xl mx-auto space-y-6 shadow-2xl">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-white uppercase tracking-wider block">
-              Deck URL or Copy-Pasted Text Decklist:
-            </label>
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-bold text-white uppercase tracking-wider block">
+                Deck URL or Copy-Pasted Text Decklist:
+              </label>
+              <div className="flex items-center gap-2 text-[11px] text-[#8b949e]">
+                <span>Load Sample:</span>
+                <button
+                  type="button"
+                  onClick={() => setDeckInput('https://manascry.com/share/70244bd10bc55d884d1603ee88adbc3fcc3dc3b24e6a727c0bf5ba9e22e87c64')}
+                  className="px-2 py-0.5 bg-cyan-500/15 text-cyan-300 rounded hover:bg-cyan-500/25 transition-colors font-mono"
+                >
+                  ManaScry
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDeckInput('https://www.moxfield.com/decks/sample-edh-staples')}
+                  className="px-2 py-0.5 bg-amber-500/15 text-amber-300 rounded hover:bg-amber-500/25 transition-colors font-mono"
+                >
+                  Moxfield
+                </button>
+              </div>
+            </div>
             <textarea
               rows={4}
-              placeholder="Paste Moxfield URL (https://www.moxfield.com/decks/...), Archidekt URL, or raw list (e.g. 1 Sol Ring)..."
+              placeholder="Paste ManaScry link (https://manascry.com/share/...), Moxfield URL (https://www.moxfield.com/decks/...), Archidekt link, or raw text list (e.g. 1 Sol Ring)..."
               value={deckInput}
               onChange={(e) => setDeckInput(e.target.value)}
               className="w-full p-4 bg-[#090d16] border border-white/10 rounded-2xl text-xs sm:text-sm text-white placeholder-[#8b949e] focus:outline-none focus:border-amber-500 font-mono leading-relaxed"
