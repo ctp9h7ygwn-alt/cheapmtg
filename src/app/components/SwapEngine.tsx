@@ -366,7 +366,7 @@ function SwapEngineContent() {
 
           {/* Dropdown Suggestions */}
           {showDropdown && searchResults.length > 0 && (
-            <div className="absolute left-0 right-0 top-full mt-3 bg-[#0c101c]/95 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-80 overflow-y-auto divide-y divide-white/5 backdrop-blur-2xl">
+            <div className="absolute left-0 right-0 top-full mt-3 bg-[#0c101c]/95 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-80 overflow-y-auto divide-y divide-white/5 backdrop-blur-md">
               {searchResults.map((card) => (
                 <button
                   key={card.oracle_id}

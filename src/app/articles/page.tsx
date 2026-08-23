@@ -83,14 +83,20 @@ export default async function ArticlesIndexPage() {
 
   return (
     <div className="min-h-screen bg-[#05070a] text-[#f0f6fc] relative selection:bg-amber-500/30 selection:text-amber-200">
-      {/* Dynamic Background Glow */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-10%] left-[20%] w-[600px] h-[600px] rounded-full bg-amber-500/10 blur-[140px] animate-pulse-slow"></div>
-        <div className="absolute top-[30%] right-[-10%] w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-[150px] animate-pulse-slow"></div>
-      </div>
+      {/* Hardware-Accelerated Ambient Glow */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle 500px at 20% 0%, rgba(245, 158, 11, 0.07), transparent 70%),
+            radial-gradient(circle 500px at 80% 25%, rgba(6, 182, 212, 0.05), transparent 70%)
+          `,
+          transform: 'translateZ(0)',
+        }}
+      />
 
       {/* Header Bar */}
-      <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#05070a]/80 backdrop-blur-2xl">
+      <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#05070a]/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
             <img src="/logo.png" alt="MTGCheap Logo" className="h-10 sm:h-14 w-auto object-contain" />
