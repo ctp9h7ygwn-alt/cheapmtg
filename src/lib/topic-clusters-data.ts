@@ -287,6 +287,35 @@ export const TOPIC_CLUSTERS: Record<string, ClusterMeta> = {
       { question: 'How many dual lands should a 3-color budget deck run?', answer: 'A 3-color budget deck should run roughly 9–12 dual lands (3 of each pair), 3 Tri-lands/Panoramas, 4–5 utility lands, and 12–15 basic lands.' },
     ],
   },
+
+  'mana-rocks': {
+    slug: 'mana-rocks',
+    title: 'Best Budget Mana Rocks for Commander',
+    shortTitle: 'Mana Rocks',
+    metaTitle: 'Best Budget Mana Rocks for Commander (Under $1 & $2 Options) | MTGCheap',
+    metaDescription: 'Discover the top budget mana rocks and fast artifact ramp for EDH. Inexpensive alternatives to Mana Crypt, Mox Opal, Jeweled Lotus, and Grim Monolith.',
+    heroHeadline: 'Best Budget Mana Rocks for Commander',
+    heroSubheadline: 'Fix your colors and accelerate on turn two. The top budget 2-drop artifact rocks, signets, talismans, and utility rocks under $1.50.',
+    roleDescription: 'Mana rocks ensure non-green decks can ramp reliably on curve without relying on $100+ fast mana staples. Efficient 2-mana rocks like Talismans, Signets, Mind Stone, and Fellwar Stone provide 90% of the acceleration for pennies.',
+    targetTags: ['mana-rock', 'treasure', 'cost-reducer', 'fast-mana'],
+    fallbackKeywords: ['{t}: add', 'add one mana of any color', 'add {c}{c}'],
+    keyExpensiveStaples: [
+      { name: 'Mana Crypt', slug: 'budget-options-for-mana-crypt', price: 180.0, reason: 'Zero-mana explosive 2-mana rock' },
+      { name: 'Mox Opal', slug: 'budget-options-for-mox-opal', price: 75.0, reason: 'Zero-mana colored fast mana artifact' },
+      { name: 'Grim Monolith', slug: 'budget-options-for-grim-monolith', price: 240.0, reason: '2-mana artifact tapping for 3 colorless mana' },
+      { name: 'Chrome Mox', slug: 'budget-options-for-chrome-mox', price: 95.0, reason: 'Zero-mana imprint colored fast mana' },
+    ],
+    subcategories: [
+      { title: '2-CMC Untapped Color Fixing', description: 'Talismans and Fellwar Stone that produce colored mana the turn they enter.', tags: ['mana-rock'] },
+      { title: 'Generic Mana Rocks with Utility', description: 'Mind Stone and Thought Vessel that ramp early and provide late-game utility.', tags: ['mana-rock'] },
+      { title: '3-CMC Color Fixing & Draw', description: 'Commander\'s Sphere and Decanter of Endless Water for 3+ color decks.', tags: ['mana-rock'] },
+    ],
+    faqs: [
+      { question: 'What is the single best budget mana rock in Commander?', answer: 'Sol Ring ($1.25) and Arcane Signet ($0.45) are the undisputed best budget mana rocks, providing untapped fixing with zero drawback.' },
+      { question: 'Why are 2-mana rocks better than 3-mana rocks?', answer: '2-mana rocks let you curve out on turn two, enabling you to cast 4-mana commanders and spells on turn three.' },
+      { question: 'What are the cheapest untapped mana rocks in MTG?', answer: 'Fellwar Stone ($0.65), Mind Stone ($0.25), and the 10-card Talisman cycle ($0.40–$1.20) are the top cheap untapped rocks.' },
+    ],
+  },
 };
 
 // Mana Base Recommendation Calculator (Client Safe)

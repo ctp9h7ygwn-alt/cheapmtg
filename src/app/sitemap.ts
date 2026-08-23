@@ -55,6 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/budget-commander/mana-base`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.95 },
     { url: `${baseUrl}/budget-commander/card-draw`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/budget-commander/ramp`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/mana-rocks`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/budget-commander/removal`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/budget-commander/board-wipes`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/budget-commander/protection`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
@@ -63,23 +64,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/budget-commander/lands`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/budget-commander/dual-lands`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/budget-commander/cards-under-1-dollar`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/cards-under-2-dollars`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${baseUrl}/budget-commander/cards-under-5-dollars`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.9 },
   ];
 
-  // Static flagship card guides
-  const staticArticles: MetadataRoute.Sitemap = [
-    {
-      url: `${baseUrl}/articles/budget-options-for-rhystic-study`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/articles/budget-options-for-the-one-ring`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.85,
-    },
-  ];
+  // High-Priority Search Console Winners Flagship Articles
+  const searchConsoleWinners: MetadataRoute.Sitemap = [
+    'budget-options-for-badgermole-cub',
+    'budget-options-for-rhystic-study',
+    'budget-options-for-esper-sentinel',
+    'budget-options-for-phyrexian-altar',
+    'budget-options-for-chaos-warp',
+    'budget-options-for-show-and-tell',
+    'budget-options-for-cyclonic-rift',
+    'budget-options-for-the-one-ring',
+    'budget-options-for-jeskas-will',
+    'budget-options-for-seedborn-muse',
+    'budget-options-for-senseis-divining-top',
+    'budget-options-for-the-great-henge',
+    'budget-options-for-sea-gate-restoration',
+    'budget-options-for-mox-opal',
+    'budget-options-for-sheoldred-the-apocalypse',
+    'budget-options-for-enlightened-tutor',
+    'budget-options-for-earthcraft',
+    'budget-options-for-coat-of-arms',
+    'budget-options-for-displacer-kitten',
+    'budget-options-for-gaeas-cradle',
+    'budget-options-for-demonic-tutor',
+  ].map((slug) => ({
+    url: `${baseUrl}/articles/${slug}`,
+    lastModified: currentDate,
+    changeFrequency: 'weekly' as const,
+    priority: 0.95,
+  }));
 
   // Dynamic High-Value Card Articles from Database (Indexed Staples >= $10.00)
   let dynamicArticleUrls: MetadataRoute.Sitemap = [];
@@ -104,5 +121,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Sitemap DB query error, falling back to core URLs:', e);
   }
 
-  return [...coreUrls, ...clusterUrls, ...staticArticles, ...dynamicArticleUrls];
+  return [...coreUrls, ...clusterUrls, ...searchConsoleWinners, ...dynamicArticleUrls];
 }

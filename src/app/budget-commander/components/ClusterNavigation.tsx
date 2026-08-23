@@ -11,7 +11,8 @@ const CLUSTERS = [
   { slug: 'deck-building', label: 'Deckbuilding Guide' },
   { slug: 'mana-base', label: 'Mana Base Tool' },
   { slug: 'card-draw', label: 'Card Draw' },
-  { slug: 'ramp', label: 'Ramp & Rocks' },
+  { slug: 'ramp', label: 'Ramp' },
+  { slug: 'mana-rocks', label: 'Mana Rocks' },
   { slug: 'removal', label: 'Removal' },
   { slug: 'board-wipes', label: 'Board Wipes' },
   { slug: 'protection', label: 'Protection' },
@@ -20,6 +21,8 @@ const CLUSTERS = [
   { slug: 'lands', label: 'Utility Lands' },
   { slug: 'dual-lands', label: 'Dual Lands' },
   { slug: 'cards-under-1-dollar', label: 'Cards Under $1' },
+  { slug: 'cards-under-2-dollars', label: 'Cards Under $2' },
+  { slug: 'cards-under-5-dollars', label: 'Cards Under $5' },
 ];
 
 export default function ClusterNavigation({ currentSlug }: Props) {

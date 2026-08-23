@@ -149,7 +149,8 @@ export default async function ArticlesIndexPage() {
               { name: 'Mana Base Tool', href: '/budget-commander/mana-base', color: 'text-emerald-300' },
               { name: 'Deckbuilding', href: '/budget-commander/deck-building', color: 'text-cyan-300' },
               { name: 'Card Draw', href: '/budget-commander/card-draw', color: 'text-blue-300' },
-              { name: 'Ramp & Rocks', href: '/budget-commander/ramp', color: 'text-orange-300' },
+              { name: 'Ramp', href: '/budget-commander/ramp', color: 'text-orange-300' },
+              { name: 'Mana Rocks', href: '/budget-commander/mana-rocks', color: 'text-yellow-300' },
               { name: 'Removal', href: '/budget-commander/removal', color: 'text-red-300' },
               { name: 'Board Wipes', href: '/budget-commander/board-wipes', color: 'text-purple-300' },
               { name: 'Protection', href: '/budget-commander/protection', color: 'text-teal-300' },
@@ -157,6 +158,8 @@ export default async function ArticlesIndexPage() {
               { name: 'Tutors', href: '/budget-commander/tutors', color: 'text-violet-300' },
               { name: 'Dual Lands', href: '/budget-commander/dual-lands', color: 'text-yellow-300' },
               { name: 'Cards Under $1', href: '/budget-commander/cards-under-1-dollar', color: 'text-emerald-400' },
+              { name: 'Cards Under $2', href: '/budget-commander/cards-under-2-dollars', color: 'text-emerald-300' },
+              { name: 'Cards Under $5', href: '/budget-commander/cards-under-5-dollars', color: 'text-amber-300' },
             ].map((topic) => (
               <Link
                 key={topic.href}

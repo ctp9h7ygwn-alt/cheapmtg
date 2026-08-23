@@ -41,9 +41,15 @@ export async function query<T extends QueryResultRow = any>(text: string, params
     return { rows: [] } as any;
   }
 
-  const start = Date.now();
-  const res = await pool.query<T>(text, params);
-  const duration = Date.now() - start;
-  return res;
+  try {
+    const start = Date.now();
+    const res = await pool.query<T>(text, params);
+    const duration = Date.now() - start;
+    return res;
+  } catch (err: any) {
+    console.warn('Database query fallback (DB offline or connection failed):', err.message || err);
+    return { rows: [] } as any;
+  }
 }
+
 
