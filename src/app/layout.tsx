@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Outfit, Cinzel } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/next';
+import Script from 'next/script';
 import './globals.css';
 
 const outfit = Outfit({
@@ -138,7 +138,19 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {children}
-        <Analytics />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-LZK9BGYSG4"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-LZK9BGYSG4');
+          `}
+        </Script>
       </body>
     </html>
   );
