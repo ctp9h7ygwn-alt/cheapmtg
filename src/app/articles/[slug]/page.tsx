@@ -473,14 +473,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const priceDisplay = data.targetCard.price_usd > 0 ? `$${data.targetCard.price_usd.toFixed(2)}` : '';
 
   return {
-    title: `Best Budget Alternatives to ${name} — Save ${topSavings}% | MTGCheap`,
-    description: `Looking for budget alternatives to ${name} (${priceDisplay})? Compare top functional replacements, savings breakdown, tradeoffs, and recommendations for Commander & Modern.`,
+    title: `Best ${name} Replacement & Budget Alternatives (Save ${topSavings}%) | MTGCheap`,
+    description: `Looking for a ${name} replacement or cards like ${name} (${priceDisplay}) on a budget? Compare top functional alternatives, similarity breakdown, tradeoffs, and EDH recommendations.`,
     keywords: [
+      `best ${name.toLowerCase()} replacement`,
+      `replacement for ${name.toLowerCase()}`,
+      `${name.toLowerCase()} replacement`,
       `budget alternatives to ${name.toLowerCase()}`,
       `cards like ${name.toLowerCase()}`,
       `cards like ${name.toLowerCase()} mtg`,
-      `${name.toLowerCase()} replacement`,
-      `replacement for ${name.toLowerCase()}`,
       `budget ${name.toLowerCase()}`,
       `${name.toLowerCase()} alternatives`,
       `${name.toLowerCase()} budget alternative`,
@@ -493,8 +494,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `${baseUrl}/articles/${params.slug}`,
     },
     openGraph: {
-      title: `Best Budget Alternatives to ${name} — Save ${topSavings}%`,
-      description: `Looking for cards like ${name} (${priceDisplay}) on a budget? Explore top-ranked functional replacements and budget alternatives for Commander.`,
+      title: `Best ${name} Replacement & Budget Alternatives (Save ${topSavings}%)`,
+      description: `Looking for a ${name} replacement or cards like ${name} (${priceDisplay}) on a budget? Explore top-ranked functional substitutes for Commander.`,
       url: `${baseUrl}/articles/${params.slug}`,
       images: data.targetCard.image_uri ? [{ url: data.targetCard.image_uri }] : [],
     },
