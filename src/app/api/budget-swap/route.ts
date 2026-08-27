@@ -403,30 +403,39 @@ const TAG_DESCRIPTIONS: Record<string, string> = {
       };
     });
 
-    return NextResponse.json({
-      target_card: {
-        oracle_id: targetCard.oracle_id,
-        name: targetCard.name,
-        mana_value: parseFloat(targetCard.mana_value),
-        mana_cost: targetCard.mana_cost || '',
-        colors: targetCard.colors,
-        color_identity: targetCard.color_identity,
-        type_line: targetCard.type_line,
-        oracle_text: targetCard.oracle_text,
-        price_usd: targetPrice,
-        scryfall_uri: targetCard.scryfall_uri,
-        image_uri: targetCard.image_uri,
-        oracle_tags: targetTags.map((t: string) => t.replace('otag:', '')),
-        primary_types: targetPrimaryTypes,
+    return NextResponse.json(
+      {
+        target_card: {
+          oracle_id: targetCard.oracle_id,
+          name: targetCard.name,
+          mana_value: parseFloat(targetCard.mana_value),
+          mana_cost: targetCard.mana_cost || '',
+          colors: targetCard.colors,
+          color_identity: targetCard.color_identity,
+          type_line: targetCard.type_line,
+          oracle_text: targetCard.oracle_text,
+          price_usd: targetPrice,
+          scryfall_uri: targetCard.scryfall_uri,
+          image_uri: targetCard.image_uri,
+          oracle_tags: targetTags.map((t: string) => t.replace('otag:', '')),
+          primary_types: targetPrimaryTypes,
+        },
+        filters: {
+          max_price: maxPrice,
+          limit,
+          exclude_silver_bordered: excludeSilver,
+          match_card_type: matchCardType,
+        },
+        alternatives,
       },
-      filters: {
-        max_price: maxPrice,
-        limit,
-        exclude_silver_bordered: excludeSilver,
-        match_card_type: matchCardType,
-      },
-      alternatives,
-    });
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+          'CDN-Cache-Control': 'public, s-maxage=86400',
+          'Vercel-CDN-Cache-Control': 'public, s-maxage=86400',
+        },
+      }
+    );
   } catch (err: any) {
     console.error('Budget swap API error:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });

@@ -20,14 +20,15 @@ export const pool =
   globalForDb.dbPool ||
   new Pool({
     connectionString,
-    max: 10,
+    max: process.env.NODE_ENV === 'production' ? 15 : 10,
     idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
+    keepAlive: true,
     ssl: isLocalhost ? false : { rejectUnauthorized: false },
   });
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForDb.dbPool = pool;
-}
+globalForDb.dbPool = pool;
+
 
 export async function query<T extends QueryResultRow = any>(text: string, params?: any[]) {
   const hasDbEnv =

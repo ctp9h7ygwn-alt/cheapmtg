@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { query } from '@/lib/db';
 import { generateEmbedding } from '@/lib/embeddings';
-import { getCuratedGuide, CuratedCardGuide } from '@/lib/curated-card-swaps';
+import { getCuratedGuide, CuratedCardGuide, CURATED_CARD_GUIDES } from '@/lib/curated-card-swaps';
 import Footer from '../../components/Footer';
 import ExpandableCardImage from '../../components/ExpandableCardImage';
 import {
@@ -30,10 +30,41 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours ISR edge cache
+export const dynamicParams = true;
 
 interface Props {
   params: { slug: string };
+}
+
+export async function generateStaticParams() {
+  const curatedSlugs = Object.keys(CURATED_CARD_GUIDES).map((key) => ({
+    slug: `budget-options-for-${key}`,
+  }));
+
+  try {
+    const res = await query(
+      `SELECT name FROM cards 
+       WHERE price_usd IS NOT NULL AND price_usd >= 10.00 
+         AND COALESCE(is_silver_bordered, FALSE) = FALSE 
+       ORDER BY price_usd DESC 
+       LIMIT 150`
+    );
+    if (res && res.rows && res.rows.length > 0) {
+      const seen = new Set(curatedSlugs.map((s) => s.slug));
+      for (const row of res.rows) {
+        const slug = 'budget-options-for-' + row.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        if (!seen.has(slug)) {
+          curatedSlugs.push({ slug });
+          seen.add(slug);
+        }
+      }
+    }
+  } catch (e) {
+    // Graceful fallback to curated slugs if DB is offline during build
+  }
+
+  return curatedSlugs;
 }
 
 function slugToCleanName(slug: string): string {
@@ -81,25 +112,10 @@ async function getArticleData(slug: string) {
   const cleanSearch = slugToCleanName(slug);
   const cardSearch = slugToCardSearchName(slug);
 
-  // 1. Fetch Target Card from DB or Scryfall API
-  let targetRes = await query(
-    `SELECT c.*, ce.embedding::text AS embedding_str
-     FROM cards c
-     LEFT JOIN card_embeddings ce ON c.oracle_id = ce.oracle_id
-     WHERE REGEXP_REPLACE(TRANSLATE(LOWER(c.name), 'âàáäãåêèéëîìíïôòóöõûùúüñÿ', 'aaaaaaeeeeiiiiooooouuuuny'), '[^a-z0-9]', '', 'g') = $1
-        OR LOWER(c.name) LIKE LOWER($2) || '%'
-     ORDER BY 
-       CASE WHEN REGEXP_REPLACE(TRANSLATE(LOWER(c.name), 'âàáäãåêèéëîìíïôòóöõûùúüñÿ', 'aaaaaaeeeeiiiiooooouuuuny'), '[^a-z0-9]', '', 'g') = $1 THEN 0 ELSE 1 END,
-       c.price_usd DESC NULLS LAST
-     LIMIT 1`,
-    [cleanSearch, cardSearch]
-  );
-
   let targetCard: any = null;
 
-  if (targetRes.rows.length > 0) {
-    targetCard = targetRes.rows[0];
-  } else if (curated) {
+  // Fast-Path: If curated guide exists, bypass DB search for target card!
+  if (curated) {
     targetCard = {
       oracle_id: curated.cleanSlug,
       name: curated.cardName,
@@ -114,54 +130,72 @@ async function getArticleData(slug: string) {
       embedding_str: null,
     };
   } else {
-    // Scryfall API Fallback
-    try {
-      const scryfallRes = await fetch(
-        `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardSearch)}`,
-        { headers: { 'User-Agent': 'CheapMTG-BudgetSwapEngine/1.0' }, next: { revalidate: 3600 } }
-      );
+    // 1. Fetch Target Card from DB
+    const targetRes = await query(
+      `SELECT c.*, ce.embedding::text AS embedding_str
+       FROM cards c
+       LEFT JOIN card_embeddings ce ON c.oracle_id = ce.oracle_id
+       WHERE REGEXP_REPLACE(TRANSLATE(LOWER(c.name), 'âàáäãåêèéëîìíïôòóöõûùúüñÿ', 'aaaaaaeeeeiiiiooooouuuuny'), '[^a-z0-9]', '', 'g') = $1
+          OR LOWER(c.name) LIKE LOWER($2) || '%'
+       ORDER BY 
+         CASE WHEN REGEXP_REPLACE(TRANSLATE(LOWER(c.name), 'âàáäãåêèéëîìíïôòóöõûùúüñÿ', 'aaaaaaeeeeiiiiooooouuuuny'), '[^a-z0-9]', '', 'g') = $1 THEN 0 ELSE 1 END,
+         c.price_usd DESC NULLS LAST
+       LIMIT 1`,
+      [cleanSearch, cardSearch]
+    );
 
-      if (scryfallRes.ok) {
-        const card = await scryfallRes.json();
-        const oracleId = card.oracle_id;
-        const name = card.name;
-        const manaValue = card.cmc ?? 0;
-        const colors = card.colors || [];
-        const colorIdentity = card.color_identity || [];
-        const typeLine = card.type_line || '';
-        const oracleText = card.oracle_text || (card.card_faces ? card.card_faces.map((f: any) => f.oracle_text).join(' // ') : '');
-        const priceUsd = card.prices?.usd ? parseFloat(card.prices.usd) : (card.prices?.usd_foil ? parseFloat(card.prices.usd_foil) : null);
-        const imageUri = card.image_uris?.normal || card.image_uris?.large || (card.card_faces && card.card_faces[0]?.image_uris?.normal ? card.card_faces[0].image_uris.normal : '');
-        const scryfallUri = card.scryfall_uri || `https://scryfall.com/card/${card.id}`;
-        const isSilverBordered = card.set_type === 'funny' || card.border_color === 'silver';
+    if (targetRes.rows.length > 0) {
+      targetCard = targetRes.rows[0];
+    } else {
+      // Scryfall API Fallback
+      try {
+        const scryfallRes = await fetch(
+          `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardSearch)}`,
+          { headers: { 'User-Agent': 'CheapMTG-BudgetSwapEngine/1.0' }, next: { revalidate: 86400 } }
+        );
 
-        try {
-          await query(
-            `INSERT INTO cards (oracle_id, name, mana_value, colors, color_identity, type_line, oracle_text, price_usd, scryfall_uri, image_uri, is_silver_bordered)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-             ON CONFLICT (oracle_id) DO UPDATE SET price_usd = EXCLUDED.price_usd`,
-            [oracleId, name, manaValue, colors, colorIdentity, typeLine, oracleText, priceUsd, scryfallUri, imageUri, isSilverBordered]
-          );
-        } catch (dbErr) {
-          // ignore db insert failure
+        if (scryfallRes.ok) {
+          const card = await scryfallRes.json();
+          const oracleId = card.oracle_id;
+          const name = card.name;
+          const manaValue = card.cmc ?? 0;
+          const colors = card.colors || [];
+          const colorIdentity = card.color_identity || [];
+          const typeLine = card.type_line || '';
+          const oracleText = card.oracle_text || (card.card_faces ? card.card_faces.map((f: any) => f.oracle_text).join(' // ') : '');
+          const priceUsd = card.prices?.usd ? parseFloat(card.prices.usd) : (card.prices?.usd_foil ? parseFloat(card.prices.usd_foil) : null);
+          const imageUri = card.image_uris?.normal || card.image_uris?.large || (card.card_faces && card.card_faces[0]?.image_uris?.normal ? card.card_faces[0].image_uris.normal : '');
+          const scryfallUri = card.scryfall_uri || `https://scryfall.com/card/${card.id}`;
+          const isSilverBordered = card.set_type === 'funny' || card.border_color === 'silver';
+
+          try {
+            await query(
+              `INSERT INTO cards (oracle_id, name, mana_value, colors, color_identity, type_line, oracle_text, price_usd, scryfall_uri, image_uri, is_silver_bordered)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+               ON CONFLICT (oracle_id) DO UPDATE SET price_usd = EXCLUDED.price_usd`,
+              [oracleId, name, manaValue, colors, colorIdentity, typeLine, oracleText, priceUsd, scryfallUri, imageUri, isSilverBordered]
+            );
+          } catch (dbErr) {
+            // ignore db insert failure
+          }
+
+          targetCard = {
+            oracle_id: oracleId,
+            name,
+            mana_value: manaValue,
+            colors,
+            color_identity: colorIdentity,
+            type_line: typeLine,
+            oracle_text: oracleText,
+            price_usd: priceUsd,
+            scryfall_uri: scryfallUri,
+            image_uri: imageUri,
+            embedding_str: null,
+          };
         }
-
-        targetCard = {
-          oracle_id: oracleId,
-          name,
-          mana_value: manaValue,
-          colors,
-          color_identity: colorIdentity,
-          type_line: typeLine,
-          oracle_text: oracleText,
-          price_usd: priceUsd,
-          scryfall_uri: scryfallUri,
-          image_uri: imageUri,
-          embedding_str: null,
-        };
+      } catch (e) {
+        // fallback
       }
-    } catch (e) {
-      // fallback
     }
   }
 

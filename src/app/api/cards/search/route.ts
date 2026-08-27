@@ -67,7 +67,16 @@ export async function GET(request: Request) {
       }
     }
 
-    return NextResponse.json({ cards: dbCards });
+    return NextResponse.json(
+      { cards: dbCards },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+          'CDN-Cache-Control': 'public, s-maxage=86400',
+          'Vercel-CDN-Cache-Control': 'public, s-maxage=86400',
+        },
+      }
+    );
   } catch (err: any) {
     console.error('Card search API error:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });
